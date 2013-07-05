@@ -37,6 +37,9 @@ or see http://www.gnu.org/licenses/agpl.txt.
 
 #ifdef _WIN32
 #include <math.h>
+#define ISNAN(x) (_isnan(x))
+#else
+#define ISNAN(x) (std::isnan(x))
 #endif
 
 #include <boost/thread.hpp>
@@ -502,7 +505,7 @@ private:
         nY = (d*p - c*q)/(a*d - b*c);
         mX = (p - nY*a)/c;// These values are actually n/m+n and m/m+n , we neednot calculate the values of m an n as we are just interested in the ratio
 //        INFO("p=" << p << ", q=" << q << ", nY=" << nY << ", mX=" << mX);
-        if(std::isnan(mX)) {
+        if(ISNAN(mX)) {
             *r = (target == inputPoint) ? 1. : 0.;
         } else {
             *r = mX;

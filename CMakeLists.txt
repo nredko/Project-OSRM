@@ -4,12 +4,12 @@ include(FindPackageHandleStandardArgs)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(BOOST_COMPONENTS filesystem regex system thread)
 
-file(GLOB ExtractorGlob Extractor/*.cpp)
-set(ExtractorSources extractor.cpp ${ExtractorGlob})
+file(GLOB ExtractorGlob Extractor/*.cpp )
+set(ExtractorSources extractor.cpp ${ExtractorGlob} tools/windowstime.cpp)
 add_executable(osrm-extract ${ExtractorSources})
 
 file(GLOB PrepareGlob Contractor/*.cpp)
-set(PrepareSources createHierarchy.cpp ${PrepareGlob})
+set(PrepareSources createHierarchy.cpp ${PrepareGlob} tools/windowstime.cpp)
 add_executable(osrm-prepare ${PrepareSources})
 
 file(GLOB RoutedGlob Server/DataStructures/*.cpp Descriptors/*.cpp DataStructures/SearchEngine*.cpp)
@@ -41,6 +41,15 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 	set(CMAKE_CXX_FLAGS "-static-intel -wd10237 -Wall -openmp -ipo")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	# using Visual Studio C++
+        LIST(APPEND BOOST_COMPONENTS date_time chrono iostreams)
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	add_definitions(-DNOMINMAX) # avoid min and max macros that can break compilation
+	add_definitions(-DSTXXL_BOOST_THREADS)
+	add_definitions(-DSTXXL_BOOST_TIMESTAMP)
+	add_definitions(-DSTXXL_BOOST_RANDOM)
+	add_definitions(-DSTXXL_BOOST_CONFIG)
+	add_definitions(-DSTXXL_BOOST_FILESYSTEM)
+	add_definitions(-DBOOST_LIB_DIAGNOSTIC)
 endif()
 
 if(APPLE)
@@ -60,10 +69,11 @@ target_link_libraries( osrm-prepare ${Boost_LIBRARIES} )
 target_link_libraries( osrm-routed ${Boost_LIBRARIES} )
 
 find_package ( BZip2 REQUIRED )
-include_directories(${BZIP_INCLUDE_DIRS})
+include_directories(${BZIP2_INCLUDE_DIR})
 target_link_libraries (osrm-extract ${BZIP2_LIBRARIES})
 
 find_package( ZLIB REQUIRED )
+include_directories(${ZLIB_INCLUDE_DIRS})
 target_link_libraries (osrm-extract ${ZLIB_LIBRARY})
 target_link_libraries (osrm-routed ${ZLIB_LIBRARY})
 
@@ -93,6 +103,7 @@ find_package( STXXL REQUIRED )
 include_directories(${STXXL_INCLUDE_DIR})
 target_link_libraries (osrm-extract ${STXXL_LIBRARY})
 target_link_libraries (osrm-prepare ${STXXL_LIBRARY})
+target_link_libraries (osrm-routed ${STXXL_LIBRARY})
 
 find_package( OSMPBF REQUIRED )
 include_directories(${OSMPBF_INCLUDE_DIR})

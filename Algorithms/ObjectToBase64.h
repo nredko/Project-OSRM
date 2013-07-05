@@ -30,11 +30,17 @@ or see http://www.gnu.org/licenses/agpl.txt.
 #include <string>
 
 #include "../Util/StringUtil.h"
-
+#ifndef _WIN32
 typedef
         boost::archive::iterators::base64_from_binary<
         boost::archive::iterators::transform_width<std::string::const_iterator, 6, 8>
 > base64_t;
+#else
+typedef
+        boost::archive::iterators::base64_from_binary<
+        boost::archive::iterators::transform_width<const char *, 6, 8>
+> base64_t;
+#endif
 
 typedef
         boost::archive::iterators::transform_width<

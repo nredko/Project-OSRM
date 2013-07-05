@@ -29,12 +29,7 @@ or see http://www.gnu.org/licenses/agpl.txt.
  #include <sys/timeb.h>
  #include <sys/types.h>
  #include <winsock.h>
- void gettimeofday(struct timeval* t,void* timezone)
- {       struct _timeb timebuffer;
-        _ftime( &timebuffer );
-        t->tv_sec=timebuffer.time;
-        t->tv_usec=1000*timebuffer.millitm;
- }
+ void gettimeofday(struct timeval* t,void* timezone);
 #else
  #include <sys/time.h>
 #endif

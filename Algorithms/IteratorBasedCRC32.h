@@ -39,6 +39,7 @@ private:
         CRC32_Processor.process_bytes( str, len);
         return CRC32_Processor.checksum();
     }
+	#ifndef _MSC_VER
     unsigned SSEBasedCRC32( char *str, unsigned len, unsigned crc){
         unsigned q=len/sizeof(unsigned),
                 r=len%sizeof(unsigned),
@@ -65,7 +66,7 @@ private:
         }
         return crc;
     }
-
+    
     unsigned cpuid(unsigned functionInput){
         unsigned eax;
         unsigned ebx;
@@ -74,9 +75,12 @@ private:
         asm("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "a" (functionInput));
         return ecx;
     }
+	#endif
+
 
     CRC32CFunctionPtr detectBestCRC32C(){
         static const int SSE42_BIT = 20;
+#ifndef _MSC_VER
         unsigned ecx = cpuid(1);
         bool hasSSE42 = ecx & (1 << SSE42_BIT);
         if (hasSSE42) {
@@ -86,6 +90,10 @@ private:
             std::cout << "using software base sse computation" << std::endl;
             return &IteratorbasedCRC32::SoftwareBasedCRC32; //crc32cSlicingBy8;
         }
+#else
+        std::cout << "using software base sse computation" << std::endl;
+        return &IteratorbasedCRC32::SoftwareBasedCRC32; //crc32cSlicingBy8;
+#endif
     }
     CRC32CFunctionPtr crcFunction;
 public:

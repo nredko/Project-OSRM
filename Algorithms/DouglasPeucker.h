@@ -107,7 +107,7 @@ public:
             std::size_t indexOfFarthestElement = pair.second;
             //find index idx of element with maxDistance
             for(std::size_t i = pair.first+1; i < pair.second; ++i){
-                const double distance = std::fabs(fastDistance(inputVector[i].location, inputVector[pair.first].location, inputVector[pair.second].location));
+                const double distance = std::fabs((double)fastDistance(inputVector[i].location, inputVector[pair.first].location, inputVector[pair.second].location));
                 if(distance > DouglasPeuckerThresholds[zoomLevel] && distance > maxDistance) {
                     indexOfFarthestElement = i;
                     maxDistance = distance;

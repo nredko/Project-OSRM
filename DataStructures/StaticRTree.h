@@ -47,6 +47,13 @@ or see http://www.gnu.org/licenses/agpl.txt.
 #include <queue>
 #include <vector>
 
+#ifdef _WIN32
+#include <math.h>
+#define ISNAN(x) (_isnan(x))
+#else
+#define ISNAN(x) (std::isnan(x))
+#endif
+
 //tuning parameters
 const static uint32_t RTREE_BRANCHING_FACTOR = 50;
 const static uint32_t RTREE_LEAF_NODE_SIZE = 1170;
@@ -669,7 +676,7 @@ public:
                             found_a_nearest_edge = true;
                         } else if(
                                 DoubleEpsilonCompare(current_perpendicular_distance, min_dist) &&
-                                1 == abs(current_edge.id - result_phantom_node.edgeBasedNode )
+                                1 == abs((long long) (current_edge.id - result_phantom_node.edgeBasedNode ))
                         && CoordinatesAreEquivalent(
                                 current_start_coordinate,
                                 _Coordinate(
@@ -869,7 +876,7 @@ private:
         mX = (p - nY*a)/c;// These values are actually n/m+n and m/m+n , we need
         // not calculate the explicit values of m an n as we
         // are just interested in the ratio
-        if(std::isnan(mX)) {
+        if(ISNAN(mX)) {
             *r = (target == inputPoint) ? 1. : 0.;
         } else {
             *r = mX;
