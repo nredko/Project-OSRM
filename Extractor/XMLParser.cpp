@@ -26,6 +26,11 @@
 #include "../DataStructures/HashTable.h"
 #include "../DataStructures/InputReaderFactory.h"
 
+#ifdef _MSC_VER
+#define ATOLL(x) (_atoi64(x))
+#else
+#define ATOLL(x) (atoll(x))
+#endif
 
 XMLParser::XMLParser(const char * filename, ExtractorCallbacks* ec, ScriptingEnvironment& se) : BaseParser(ec, se) {
 	WARN("Parsing plain .osm/.osm.bz2 is deprecated. Switch to .pbf");
@@ -130,13 +135,13 @@ _RawRestrictionContainer XMLParser::_ReadXMLRestriction() {
 					xmlChar * type = xmlTextReaderGetAttribute( inputReader, ( const xmlChar* ) "type" );
 
 					if(xmlStrEqual(role, (const xmlChar *) "to") && xmlStrEqual(type, (const xmlChar *) "way")) {
-						restriction.toWay = atoi((const char*) ref);
+						restriction.toWay = ATOLL((const char*) ref);
 					}
 					if(xmlStrEqual(role, (const xmlChar *) "from") && xmlStrEqual(type, (const xmlChar *) "way")) {
-						restriction.fromWay = atoi((const char*) ref);
+						restriction.fromWay = ATOLL((const char*) ref);
 					}
 					if(xmlStrEqual(role, (const xmlChar *) "via") && xmlStrEqual(type, (const xmlChar *) "node")) {
-						restriction.restriction.viaNode = atoi((const char*) ref);
+						restriction.restriction.viaNode = ATOLL((const char*) ref);
 					}
 
 					if(NULL != type) {
@@ -177,7 +182,7 @@ ExtractionWay XMLParser::_ReadXMLWay() {
 
 			if ( depth == childDepth && childType == 15 && xmlStrEqual( childName, ( const xmlChar* ) "way" ) == 1 ) {
 				xmlChar* id = xmlTextReaderGetAttribute( inputReader, ( const xmlChar* ) "id" );
-				way.id = atoi((char*)id);
+				way.id = ATOLL((char*)id);
 				xmlFree(id);
 				xmlFree( childName );
 				break;
@@ -203,7 +208,7 @@ ExtractionWay XMLParser::_ReadXMLWay() {
 			} else if ( xmlStrEqual( childName, ( const xmlChar* ) "nd" ) == 1 ) {
 				xmlChar* ref = xmlTextReaderGetAttribute( inputReader, ( const xmlChar* ) "ref" );
 				if ( ref != NULL ) {
-					way.path.push_back( atoi(( const char* ) ref ) );
+					way.path.push_back( ATOLL(( const char* ) ref ) );
 					xmlFree( ref );
 				}
 			}
@@ -228,7 +233,7 @@ ImportNode XMLParser::_ReadXMLNode() {
 	}
 	attribute = xmlTextReaderGetAttribute( inputReader, ( const xmlChar* ) "id" );
 	if ( attribute != NULL ) {
-		node.id =  atoi(( const char* ) attribute );
+		node.id =  ATOLL(( const char* ) attribute );
 		xmlFree( attribute );
 	}
 
