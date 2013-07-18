@@ -87,10 +87,6 @@ endif(NOT Boost_FOUND)
 
 include_directories(${Boost_INCLUDE_DIRS})
 
-target_link_libraries( OSRM ${Boost_LIBRARIES})
-target_link_libraries( osrm-extract ${Boost_LIBRARIES} )
-target_link_libraries( osrm-prepare ${Boost_LIBRARIES} )
-target_link_libraries( osrm-routed ${Boost_LIBRARIES} OSRM)
 
 find_package ( BZip2 REQUIRED )
 include_directories(${BZIP2_INCLUDE_DIR})
@@ -140,6 +136,11 @@ find_package( OSMPBF REQUIRED )
 include_directories(${OSMPBF_INCLUDE_DIR})
 target_link_libraries (osrm-extract ${OSMPBF_LIBRARY})
 target_link_libraries (osrm-prepare ${OSMPBF_LIBRARY})
+
+target_link_libraries( OSRM ${Boost_LIBRARIES})
+target_link_libraries( osrm-extract ${Boost_LIBRARIES} )
+target_link_libraries( osrm-prepare ${Boost_LIBRARIES} )
+target_link_libraries( osrm-routed ${Boost_LIBRARIES} OSRM)
 
 if(WITH_TOOLS)
 	message("-- Activating OSRM internal tools")
