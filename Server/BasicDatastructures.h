@@ -51,11 +51,12 @@ struct Header {
   }
 };
 
-enum CompressionType {
+typedef enum CompressionType {
     noCompression,
     gzipRFC1952,
     deflateRFC1951
 } Compression;
+
 
 struct Request {
 	std::string uri;
@@ -73,6 +74,7 @@ struct Reply {
 	} status;
 
 	std::vector<Header> headers;
+    // Bodies of these functions are in OSRM.cpp
     std::vector<boost::asio::const_buffer> toBuffers();
     std::vector<boost::asio::const_buffer> HeaderstoBuffers();
 	std::string content;
@@ -86,76 +88,6 @@ struct Reply {
 		}
 	}
 };
-
-boost::asio::const_buffer ToBuffer(Reply::status_type status) {
-	switch (status) {
-	case Reply::ok:
-		return boost::asio::buffer(okString);
-	case Reply::internalServerError:
-		return boost::asio::buffer(internalServerErrorString);
-	default:
-		return boost::asio::buffer(badRequestString);
-	}
-}
-
-std::string ToString(Reply::status_type status) {
-	switch (status) {
-	case Reply::ok:
-		return okHTML;
-	case Reply::badRequest:
-		return badRequestHTML;
-	default:
-		return internalServerErrorHTML;
-	}
-}
-
-std::vector<boost::asio::const_buffer> Reply::toBuffers(){
-	std::vector<boost::asio::const_buffer> buffers;
-	buffers.push_back(ToBuffer(status));
-	for (std::size_t i = 0; i < headers.size(); ++i) {
-		Header& h = headers[i];
-		buffers.push_back(boost::asio::buffer(h.name));
-		buffers.push_back(boost::asio::buffer(seperators));
-		buffers.push_back(boost::asio::buffer(h.value));
-		buffers.push_back(boost::asio::buffer(crlf));
-	}
-	buffers.push_back(boost::asio::buffer(crlf));
-	buffers.push_back(boost::asio::buffer(content));
-	return buffers;
-}
-
-std::vector<boost::asio::const_buffer> Reply::HeaderstoBuffers(){
-    std::vector<boost::asio::const_buffer> buffers;
-    buffers.push_back(ToBuffer(status));
-    for (std::size_t i = 0; i < headers.size(); ++i) {
-        Header& h = headers[i];
-//        std::cout << h.name << ": " << h.value << std::endl;
-        buffers.push_back(boost::asio::buffer(h.name));
-        buffers.push_back(boost::asio::buffer(seperators));
-        buffers.push_back(boost::asio::buffer(h.value));
-        buffers.push_back(boost::asio::buffer(crlf));
-    }
-    buffers.push_back(boost::asio::buffer(crlf));
-    return buffers;
-}
-
-Reply Reply::stockReply(Reply::status_type status) {
-	Reply rep;
-	rep.status = status;
-	rep.content = ToString(status);
-	rep.headers.resize(3);
-	rep.headers[0].name = "Access-Control-Allow-Origin";
-	rep.headers[0].value = "*";
-	rep.headers[1].name = "Content-Length";
-
-    std::string s;
-    intToString(rep.content.size(), s);
-
-    rep.headers[1].value = s;
-	rep.headers[2].name = "Content-Type";
-	rep.headers[2].value = "text/html";
-	return rep;
-}
 } // namespace http
 
 #endif //BASIC_DATASTRUCTURES_H

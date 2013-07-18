@@ -30,7 +30,7 @@ file(GLOB SearchEngineSource DataStructures/SearchEngine*.cpp)
 file(GLOB ServerStructureGlob Server/DataStructures/*.cpp)
 
 set(OSRMSources ${LibOSRMGlob} ${DescriptorGlob} ${SearchEngineSource} ${ServerStructureGlob})
-add_library(OSRM SHARED ${OSRMSources})
+add_library(OSRM STATIC ${OSRMSources})
 
 # Check the release mode
 if(NOT CMAKE_BUILD_TYPE MATCHES Debug)
@@ -56,6 +56,18 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 	set(CMAKE_CXX_FLAGS "-static-intel -wd10237 -Wall -openmp -ipo")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	# using Visual Studio C++
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	add_definitions(-DNOMINMAX) # avoid min and max macros that can break compilation
+	SET(STXXL_USE_BOOST 1)
+endif()
+
+if(STXXL_USE_BOOST) 
+        LIST(APPEND BOOST_COMPONENTS date_time chrono iostreams)
+	add_definitions(-DSTXXL_BOOST_THREADS)
+	add_definitions(-DSTXXL_BOOST_TIMESTAMP)
+	add_definitions(-DSTXXL_BOOST_RANDOM)
+	add_definitions(-DSTXXL_BOOST_CONFIG)
+	add_definitions(-DSTXXL_BOOST_FILESYSTEM)
 endif()
 
 if(APPLE)
@@ -65,10 +77,14 @@ endif()
 
 #Check Boost
 set(BOOST_MIN_VERSION "1.44.0")
-find_package( Boost ${BOOST_MIN_VERSION} COMPONENTS ${BOOST_COMPONENTS} REQUIRED )
+find_package( Boost ${BOOST_MIN_VERSION} COMPONENTS ${BOOST_COMPONENTS} )
 if (NOT Boost_FOUND)
-      message(FATAL_ERROR "Fatal error: Boost (version >= 1.44.0) required.\n")
-endif (NOT Boost_FOUND)
+      set(BOOST_ROOT "NOT FOUND: please choose" CACHE PATH "")
+      set(Boost_USE_STATIC_LIBS OFF CACHE BOOL "")
+      MARK_AS_ADVANCED(CLEAR BOOST_ROOT)
+      message(FATAL_ERROR "Fatal error: Boost (version >= 1.44.0) required. Please install it or specify correct BOOST_ROOT and Boost_USE_STATIC_LIBS\n")
+endif(NOT Boost_FOUND)
+
 include_directories(${Boost_INCLUDE_DIRS})
 
 target_link_libraries( OSRM ${Boost_LIBRARIES})
@@ -77,10 +93,11 @@ target_link_libraries( osrm-prepare ${Boost_LIBRARIES} )
 target_link_libraries( osrm-routed ${Boost_LIBRARIES} OSRM)
 
 find_package ( BZip2 REQUIRED )
-include_directories(${BZIP_INCLUDE_DIRS})
+include_directories(${BZIP2_INCLUDE_DIR})
 target_link_libraries (osrm-extract ${BZIP2_LIBRARIES})
 
 find_package( ZLIB REQUIRED )
+include_directories(${ZLIB_INCLUDE_DIRS})
 target_link_libraries (osrm-extract ${ZLIB_LIBRARY})
 target_link_libraries (osrm-routed ${ZLIB_LIBRARY})
 
@@ -117,6 +134,7 @@ find_package( STXXL REQUIRED )
 include_directories(${STXXL_INCLUDE_DIR})
 target_link_libraries (osrm-extract ${STXXL_LIBRARY})
 target_link_libraries (osrm-prepare ${STXXL_LIBRARY})
+target_link_libraries (OSRM ${STXXL_LIBRARY})
 
 find_package( OSMPBF REQUIRED )
 include_directories(${OSMPBF_INCLUDE_DIR})

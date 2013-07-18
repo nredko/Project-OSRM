@@ -88,7 +88,7 @@ ScriptingEnvironment::ScriptingEnvironment(const char * fileName) {
         							 ];
         luabind::module(myLuaState) [
                                      luabind::class_<std::vector<std::string> >("vector")
-                                     .def("Add", &std::vector<std::string>::push_back)
+                                     .def("Add", static_cast<void(std::vector<std::string>::*)(const std::string&)>(&std::vector<std::string>::push_back))
                                      ];
 
         if(0 != luaL_dofile(myLuaState, fileName) ) {

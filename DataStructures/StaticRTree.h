@@ -34,6 +34,7 @@ or see http://www.gnu.org/licenses/agpl.txt.
 #include <boost/foreach.hpp>
 #include <boost/algorithm/minmax.hpp>
 #include <boost/algorithm/minmax_element.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/thread.hpp>
@@ -651,7 +652,7 @@ public:
                             found_a_nearest_edge = true;
                         } else if(
                                 DoubleEpsilonCompare(current_perpendicular_distance, min_dist) &&
-                                1 == abs(current_edge.id - result_phantom_node.edgeBasedNode )
+                                1 == abs((long long) (current_edge.id - result_phantom_node.edgeBasedNode) )
                         && CoordinatesAreEquivalent(
                                 current_start_coordinate,
                                 _Coordinate(
@@ -766,7 +767,7 @@ private:
         mX = (p - nY*a)/c;// These values are actually n/m+n and m/m+n , we need
         // not calculate the explicit values of m an n as we
         // are just interested in the ratio
-        if(std::isnan(mX)) {
+        if(boost::math::isnan(mX)) {
             *r = (target == inputPoint) ? 1. : 0.;
         } else {
             *r = mX;
