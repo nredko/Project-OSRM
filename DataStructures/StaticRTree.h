@@ -652,7 +652,7 @@ public:
                             found_a_nearest_edge = true;
                         } else if(
                                 DoubleEpsilonCompare(current_perpendicular_distance, min_dist) &&
-                                1 == abs((long long) (current_edge.id - result_phantom_node.edgeBasedNode) )
+                                abs(abs((double)current_edge.id - result_phantom_node.edgeBasedNode)-1)<1e-8 
                         && CoordinatesAreEquivalent(
                                 current_start_coordinate,
                                 _Coordinate(
