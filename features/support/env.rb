@@ -16,3 +16,6 @@ else
   puts "Using default port #{OSRM_PORT}"
 end
 
+at_exit do
+  OSRMLauncher.shutdown
+end

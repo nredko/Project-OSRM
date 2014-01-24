@@ -1,7 +1,7 @@
 When /^I route I should get$/ do |table|
   reprocess
   actual = []
-  OSRMLauncher.new("#{@osm_file}.osrm") do
+  OSRMLauncher.load("#{@osm_file}.osrm") do
     table.hashes.each_with_index do |row,ri|
       waypoints = []
       if row['from'] and row['to']
