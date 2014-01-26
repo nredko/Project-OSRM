@@ -1,12 +1,8 @@
 require 'net/http'
 
-HOST = "http://localhost:#{OSRM_PORT}"
 
-if ENV['OS']=~/Windows.*/ then
-   REQUEST_TIMEOUT = 3
-else
-   REQUEST_TIMEOUT = 1
-end
+HOST = "http://#{SERVER_HOST}:#{OSRM_PORT}"
+REQUEST_TIMEOUT = 1
 
 DESTINATION_REACHED = 15      #OSRM instruction code
 

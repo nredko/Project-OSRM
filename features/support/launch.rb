@@ -3,6 +3,7 @@ require 'open3'
 
 LAUNCH_TIMEOUT = 2
 SHUTDOWN_TIMEOUT = 2
+RESTART_EVERY_TIME = false
 OSRM_ROUTED_LOG_FILE = 'osrm-routed.log'
 if ENV['OS']=~/Windows.*/ then
   TERMSIGNAL=9
@@ -20,6 +21,10 @@ class OSRMLauncher
       load_data
       self.launch unless @@pid
       yield
+      if RESTART_EVERY_TIME then
+         shutdown
+         @@pid = nil
+      end
     end
   end
 
@@ -83,7 +88,7 @@ class OSRMLauncher
   def self.wait_for_connection
     while true
       begin
-        socket = TCPSocket.new('localhost', OSRM_PORT)
+        socket = TCPSocket.new(SERVER_HOST, OSRM_PORT)
         return
       rescue Errno::ECONNREFUSED
         sleep 0.1
