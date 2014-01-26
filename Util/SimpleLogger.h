@@ -100,6 +100,22 @@ public:
 	   	return os;
    }
 
+    std::ostringstream& WriteTimed(LogLevel l = logINFO) {
+        time_t ltime;
+        struct tm *Tm;
+
+        ltime=time(NULL);
+	Tm=localtime(&ltime);
+        Write(l) <<
+            (Tm->tm_mday < 10 ? "0" : "" )  << Tm->tm_mday    << "-" <<
+            (Tm->tm_mon+1 < 10 ? "0" : "" ) << (Tm->tm_mon+1) << "-" <<
+            1900+Tm->tm_year << " " << (Tm->tm_hour < 10 ? "0" : "" ) <<
+            Tm->tm_hour << ":" << (Tm->tm_min < 10 ? "0" : "" ) <<
+            Tm->tm_min << ":" << (Tm->tm_sec < 10 ? "0" : "" ) <<
+            Tm->tm_sec << ": " ;
+       return os;
+    }
+
 	virtual ~SimpleLogger() {
 		   	if(!LogPolicy::GetInstance().IsMute()) {
 		   	switch(level) {

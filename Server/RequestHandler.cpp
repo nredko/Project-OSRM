@@ -47,19 +47,8 @@ void RequestHandler::handle_request(const http::Request& req, http::Reply& rep){
     try {
         std::string request(req.uri);
 
-        time_t ltime;
-        struct tm *Tm;
 
-        ltime=time(NULL);
-        Tm=localtime(&ltime);
-
-        SimpleLogger().Write() <<
-            (Tm->tm_mday < 10 ? "0" : "" )  << Tm->tm_mday    << "-" <<
-            (Tm->tm_mon+1 < 10 ? "0" : "" ) << (Tm->tm_mon+1) << "-" <<
-            1900+Tm->tm_year << " " << (Tm->tm_hour < 10 ? "0" : "" ) <<
-            Tm->tm_hour << ":" << (Tm->tm_min < 10 ? "0" : "" ) <<
-            Tm->tm_min << ":" << (Tm->tm_sec < 10 ? "0" : "" ) <<
-            Tm->tm_sec << " " << req.endpoint.to_string() << " " <<
+        SimpleLogger().WriteTimed() << req.endpoint.to_string() << " " <<
             req.referrer << ( 0 == req.referrer.length() ? "- " :" ") <<
             req.agent << ( 0 == req.agent.length() ? "- " :" ") << req.uri;
 
