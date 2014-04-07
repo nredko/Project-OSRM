@@ -16,6 +16,8 @@ else()
   message(WARNING "Building on a 32 bit system is unsupported")
 endif()
 
+OPTION(WITH_TOOLS "Build ORSM tools" ON)
+
 include_directories(${CMAKE_SOURCE_DIR}/Include/)
 
 add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/Util/UUID.cpp UUID.cpp.alwaysbuild
@@ -253,8 +255,10 @@ if(WITH_TOOLS)
   add_executable(osrm-cli Tools/simpleclient.cpp)
   target_link_libraries(osrm-cli ${Boost_LIBRARIES} OSRM UUID GITDESCRIPTION)
   target_link_libraries(osrm-cli ${TBB_LIBRARIES})
-  add_executable(osrm-io-benchmark Tools/io-benchmark.cpp)
-  target_link_libraries(osrm-io-benchmark ${Boost_LIBRARIES} GITDESCRIPTION)
+  if(NOT WIN32)
+     add_executable(osrm-io-benchmark Tools/io-benchmark.cpp)
+     target_link_libraries(osrm-io-benchmark ${Boost_LIBRARIES} GITDESCRIPTION)
+  endif()
   add_executable(osrm-unlock-all Tools/unlock_all_mutexes.cpp)
   target_link_libraries(osrm-unlock-all ${Boost_LIBRARIES} GITDESCRIPTION)
   if(UNIX AND NOT APPLE)
