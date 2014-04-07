@@ -2,6 +2,11 @@ require 'socket'
 require 'open3'
 
 OSRM_ROUTED_LOG_FILE = 'osrm-routed.log'
+if ENV['OS']=~/Windows.*/ then
+  TERMSIGNAL=9
+else
+  TERMSIGNAL='TERM'
+end
 
 class OSRMBackgroundLauncher
   def initialize input_file, &block
@@ -39,9 +44,15 @@ class OSRMBackgroundLauncher
 
   def osrm_up?
     if @pid
-      `ps -o state -p #{@pid}`.split[1].to_s =~ /^[DRST]/
-    else
-      false
+       begin
+         if Process.waitpid(@pid, Process::WNOHANG) then
+            false
+         else
+            true
+         end
+       rescue Errno::ESRCH, Errno::ECHILD
+        false
+      end
     end
   end
 
@@ -53,7 +64,7 @@ class OSRMBackgroundLauncher
 
   def osrm_down
     if @pid
-      Process.kill 'TERM', @pid
+      Process.kill TERMSIGNAL, @pid
       wait_for_shutdown
     end
   end
