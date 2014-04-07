@@ -160,9 +160,9 @@ int main (int argc, char *argv[]) {
         LogPolicy::GetInstance().Unmute();
         std::ifstream restrictionsInstream( restrictions_path.c_str(), std::ios::binary);
         TurnRestriction restriction;
-        UUID uuid_loaded, uuid_orig;
+        UUIDC uuid_loaded, uuid_orig;
         unsigned usableRestrictionsCounter(0);
-        restrictionsInstream.read((char*)&uuid_loaded, sizeof(UUID));
+        restrictionsInstream.read((char*)&uuid_loaded, sizeof(UUIDC));
         if( !uuid_loaded.TestPrepare(uuid_orig) ) {
             SimpleLogger().Write(logWARNING) <<
                 ".restrictions was prepared with different build.\n"
@@ -331,7 +331,7 @@ int main (int argc, char *argv[]) {
             " edges";
 
         std::ofstream hsgr_output_stream(graphOut.c_str(), std::ios::binary);
-        hsgr_output_stream.write((char*)&uuid_orig, sizeof(UUID) );
+        hsgr_output_stream.write((char*)&uuid_orig, sizeof(UUIDC) );
         BOOST_FOREACH(const QueryEdge & edge, contractedEdgeList) {
             BOOST_ASSERT( UINT_MAX != edge.source );
             BOOST_ASSERT( UINT_MAX != edge.target );
