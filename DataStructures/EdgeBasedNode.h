@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include <boost/assert.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 
 #include "../Util/MercatorUtil.h"
 #include "../typedefs.h"
@@ -55,7 +56,7 @@ struct EdgeBasedNode {
         const Point foot = ComputePerpendicularFoot(p, q, r, epsilon);
         ratio            = ComputeRatio(p, q, foot, epsilon);
 
-        BOOST_ASSERT( !std::isnan(ratio) );
+        BOOST_ASSERT( !boost::math::isnan(ratio) );
 
         nearest_location = ComputeNearestPointOnSegment(foot, ratio);
 
