@@ -78,7 +78,7 @@ class OSRMBackgroundLauncher
   def wait_for_connection
     while true
       begin
-        socket = TCPSocket.new('localhost', OSRM_PORT)
+        socket = TCPSocket.new('127.0.0.1', OSRM_PORT)
         return
       rescue Errno::ECONNREFUSED
         sleep 0.1

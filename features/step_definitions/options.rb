@@ -10,7 +10,7 @@ When(/^I run "osrm\-routed\s?(.*?)"$/) do |options|
 
     begin
       Timeout.timeout(1) do
-        @stdout = `#{BIN_PATH}/osrm-routed #{options_expanded} 2>error.log`
+        @stdout = `#{QQ}#{BIN_PATH}/osrm-routed#{EXE}#{QQ} #{options_expanded} 2>error.log`
         @stderr = File.read 'error.log'
         @exit_code = $?.exitstatus
       end
