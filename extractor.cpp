@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
                                << requested_num_threads << ")";
 
         /*** Setup Scripting Environment ***/
-        ScriptingEnvironment scripting_environment(profile_path.c_str());
+        ScriptingEnvironment scripting_environment(profile_path.string().c_str());
 
         omp_set_num_threads(real_num_threads);
 
@@ -223,11 +223,11 @@ int main(int argc, char *argv[])
         BaseParser *parser;
         if (file_has_pbf_format)
         {
-            parser = new PBFParser(input_path.c_str(), extractor_callbacks, scripting_environment);
+            parser = new PBFParser(input_path.string().c_str(), extractor_callbacks, scripting_environment);
         }
         else
         {
-            parser = new XMLParser(input_path.c_str(), extractor_callbacks, scripting_environment);
+            parser = new XMLParser(input_path.string().c_str(), extractor_callbacks, scripting_environment);
         }
 
         if (!parser->ReadHeader())
