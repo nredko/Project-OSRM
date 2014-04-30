@@ -52,7 +52,7 @@ class ExtractionContainers
     STXXLStringVector name_list;
     STXXLRestrictionsVector restrictions_list;
     STXXLWayIDStartEndVector way_start_end_id_list;
-    const UUID uuid;
+    const UUIDC uuid;
 
     ExtractionContainers();
 

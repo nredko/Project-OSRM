@@ -49,7 +49,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unordered_map>
 
 ExtractorCallbacks *extractor_callbacks;
-UUID uuid;
+UUIDC uuid;
 
 int main(int argc, char *argv[])
 {
