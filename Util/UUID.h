@@ -31,19 +31,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/uuid/uuid.hpp>
 
 // implements a singleton, i.e. there is one and only one conviguration object
-class UUID
+class UUIDC
 {
   public:
-    UUID();
-    UUID(const UUID&) = delete;
-    ~UUID();
+    UUIDC();
+    UUIDC(const UUIDC&) = delete;
+    ~UUIDC();
     const boost::uuids::uuid &GetUUID() const;
     bool IsMagicNumberOK() const;
-    bool TestGraphUtil(const UUID &other) const;
-    bool TestPrepare(const UUID &other) const;
-    bool TestRTree(const UUID &other) const;
-    bool TestNodeInfo(const UUID &other) const;
-    bool TestQueryObjects(const UUID &other) const;
+    bool TestGraphUtil(const UUIDC &other) const;
+    bool TestPrepare(const UUIDC &other) const;
+    bool TestRTree(const UUIDC &other) const;
+    bool TestNodeInfo(const UUIDC &other) const;
+    bool TestQueryObjects(const UUIDC &other) const;
 
   private:
     const unsigned magic_number;
