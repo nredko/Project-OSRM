@@ -60,9 +60,9 @@ NodeID readBinaryOSRMGraphFromStream(std::istream &input_stream,
                                      std::vector<NodeInfo> *int_to_ext_node_id_map,
                                      std::vector<TurnRestriction> &restriction_list)
 {
-    const UUID uuid_orig;
-    UUID uuid_loaded;
-    input_stream.read((char *)&uuid_loaded, sizeof(UUID));
+    const UUIDC uuid_orig;
+    UUIDC uuid_loaded;
+    input_stream.read((char *)&uuid_loaded, sizeof(UUIDC));
 
     if (!uuid_loaded.TestGraphUtil(uuid_orig))
     {
@@ -285,8 +285,8 @@ unsigned readHSGRFromStream(const boost::filesystem::path &hsgr_file,
 
     boost::filesystem::ifstream hsgr_input_stream(hsgr_file, std::ios::binary);
 
-    UUID uuid_loaded, uuid_orig;
-    hsgr_input_stream.read((char *)&uuid_loaded, sizeof(UUID));
+    UUIDC uuid_loaded, uuid_orig;
+    hsgr_input_stream.read((char *)&uuid_loaded, sizeof(UUIDC));
     if (!uuid_loaded.TestGraphUtil(uuid_orig))
     {
         SimpleLogger().Write(logWARNING) << ".hsgr was prepared with different build.\n"

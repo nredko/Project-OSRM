@@ -51,7 +51,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tbb/task_scheduler_init.h>
 
 ExtractorCallbacks *extractor_callbacks;
-UUID uuid;
+UUIDC uuid;
 
 int main(int argc, char *argv[])
 {

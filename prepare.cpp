@@ -190,9 +190,9 @@ int main(int argc, char *argv[])
         LogPolicy::GetInstance().Unmute();
         boost::filesystem::ifstream restriction_stream(restrictions_path, std::ios::binary);
         TurnRestriction restriction;
-        UUID uuid_loaded, uuid_orig;
+        UUIDC uuid_loaded, uuid_orig;
         unsigned number_of_usable_restrictions = 0;
-        restriction_stream.read((char *)&uuid_loaded, sizeof(UUID));
+        restriction_stream.read((char *)&uuid_loaded, sizeof(UUIDC));
         if (!uuid_loaded.TestPrepare(uuid_orig))
         {
             SimpleLogger().Write(logWARNING) << ".restrictions was prepared with different build.\n"
@@ -380,7 +380,7 @@ int main(int argc, char *argv[])
                                << " edges";
 
         boost::filesystem::ofstream hsgr_output_stream(graphOut, std::ios::binary);
-        hsgr_output_stream.write((char *)&uuid_orig, sizeof(UUID));
+        hsgr_output_stream.write((char *)&uuid_orig, sizeof(UUIDC));
         for (const QueryEdge &edge : contracted_edge_list)
         {
             BOOST_ASSERT(UINT_MAX != edge.source);
