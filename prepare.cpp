@@ -69,8 +69,7 @@ int main(int argc, char *argv[])
     try
     {
         LogPolicy::GetInstance().Unmute();
-        std::chrono::time_point<std::chrono::steady_clock> startup_time =
-            std::chrono::steady_clock::now();
+        auto startup_time = std::chrono::steady_clock::now();
 
         boost::filesystem::path config_file_path, input_path, restrictions_path, profile_path;
         int requested_num_threads;
@@ -349,8 +348,7 @@ int main(int argc, char *argv[])
 
         SimpleLogger().Write() << "initializing contractor";
         Contractor *contractor = new Contractor(number_of_edge_based_nodes, edgeBasedEdgeList);
-        std::chrono::time_point<std::chrono::steady_clock> contraction_start_timestamp =
-            std::chrono::steady_clock::now();
+        auto contraction_start_timestamp = std::chrono::steady_clock::now();
 
         contractor->Run();
         std::chrono::duration<double> contraction_duration =

@@ -273,7 +273,7 @@ class StaticRTree
                                << " edge elements build on-top of " << coordinate_list.size()
                                << " coordinates";
 
-        std::chrono::time_point<std::chrono::steady_clock> time0 = std::chrono::steady_clock::now();
+        auto time0 = std::chrono::steady_clock::now();
         std::vector<WrappedInputElement> input_wrapper_vector(m_element_count);
 
         HilbertCode get_hilbert_number;
@@ -404,7 +404,7 @@ class StaticRTree
         tree_node_file.write((char *)&m_search_tree[0], sizeof(TreeNode) * size_of_tree);
         // close tree node file.
         tree_node_file.close();
-        std::chrono::time_point<std::chrono::steady_clock> time1 = std::chrono::steady_clock::now();
+        auto time1 = std::chrono::steady_clock::now();
         std::chrono::duration<double> elapsed_seconds = time1 - time0;
         SimpleLogger().Write() << "finished r-tree construction in " << (elapsed_seconds.count())
                                << " seconds";
