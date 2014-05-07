@@ -31,12 +31,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <boost/assert.hpp>
 
 #include <cstdio>
-#include <unistd.h>
 
 #ifdef _MSC_VER
 #include <io.h>
 #define isatty _isatty
 #define fileno _fileno
+#else
+#include <unistd.h>
 #endif
 
 #include <ostream>
