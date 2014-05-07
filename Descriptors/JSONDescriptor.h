@@ -375,7 +375,12 @@ template <class DataFacadeT> class JSONDescriptor : public BaseDescriptor<DataFa
                     shortest_segment_2 = shortestDifference[i];
                 }
             }
-
+            std::sort(shortest_path_segments.begin(),
+                shortest_path_segments.end(),
+                name_id_comperator);
+            std::sort(alternative_path_segments.begin(),
+                alternative_path_segments.end(),
+                name_id_comperator);
             std::set_difference(alternative_path_segments.begin(),
                                 alternative_path_segments.end(),
                                 shortest_path_segments.begin(),
