@@ -31,7 +31,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iosfwd> //for std::ostream
 #include <string>
 
+#ifdef _MSC_VER
+static const double COORDINATE_PRECISION = 1000000.;
+#else
 constexpr double COORDINATE_PRECISION = 1000000.;
+#endif
 
 struct FixedPointCoordinate
 {
