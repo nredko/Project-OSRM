@@ -123,6 +123,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   # using Visual Studio C++
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_definitions(-DNOMINMAX) # avoid min and max macros that can break compilation
+  add_definitions(-D_USE_MATH_DEFINES) # define M_PI
 endif()
 
 # disable partitioning of LTO process when possible (fixes Debian issues)

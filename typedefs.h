@@ -43,9 +43,15 @@ typedef unsigned int NodeID;
 typedef unsigned int EdgeID;
 typedef int EdgeWeight;
 
+#ifndef _MSC_VER
 constexpr NodeID SPECIAL_NODEID = std::numeric_limits<unsigned>::max();
 constexpr EdgeID SPECIAL_EDGEID = std::numeric_limits<unsigned>::max();
 constexpr unsigned INVALID_NAMEID = std::numeric_limits<unsigned>::max();
 constexpr EdgeWeight INVALID_EDGE_WEIGHT = std::numeric_limits<int>::max();
-
+#else 
+const static NodeID SPECIAL_NODEID = std::numeric_limits<unsigned>::max();
+const static EdgeID SPECIAL_EDGEID = std::numeric_limits<unsigned>::max();
+const static unsigned INVALID_NAMEID = std::numeric_limits<unsigned>::max();
+const static EdgeWeight INVALID_EDGE_WEIGHT = std::numeric_limits<int>::max();
+#endif
 #endif /* TYPEDEFS_H */
