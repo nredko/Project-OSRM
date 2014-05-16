@@ -33,8 +33,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <boost/assert.hpp>
 #include <cmath>
-
+#ifdef _MSC_VER
+ const static double SCALING_FACTOR = 4. / M_PI * 0xFFFF;
+ unsigned short atan_table[4096] = {
+#else
+// max value is pi/4
+constexpr double SCALING_FACTOR = 4. / M_PI * 0xFFFF;
 constexpr unsigned short atan_table[4096] = {
+#endif
 0x0000,  0x0014,  0x0028,  0x003d,  0x0051,  0x0065,
 0x007a,  0x008e,  0x00a3,  0x00b7,  0x00cb,  0x00e0,
 0x00f4,  0x0108,  0x011d,  0x0131,  0x0146,  0x015a,
@@ -720,8 +726,6 @@ constexpr unsigned short atan_table[4096] = {
 0xffe0,  0xffea,  0xfff4,  0xffff
 };
 
-// max value is pi/4
-constexpr double SCALING_FACTOR = 4. / M_PI * 0xFFFF;
 
 inline double atan2_lookup(double y, double x)
 {
