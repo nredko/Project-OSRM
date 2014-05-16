@@ -142,8 +142,8 @@ int main(int argc, const char *argv[])
         }
         else
         {
-            std::packaged_task<void()> server_task(std::bind(&Server::Run, routing_server));
-            auto future = server_task.get_future();
+            std::packaged_task<int()> server_task([&routing_server]()->int{   routing_server->Run(); return 1; });
+            std::future<int> future = server_task.get_future();
             std::thread server_thread(std::move(server_task));
 
 #ifndef _WIN32
