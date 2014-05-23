@@ -290,9 +290,13 @@ class Contractor
 
     void Run()
     {
+#ifdef _MSC_VER
+#define constexpr const static
+#endif
         // for the preperation we can use a big grain size, which is much faster (probably cache)
         constexpr size_t InitGrainSize        = 100000;
         constexpr size_t PQGrainSize          = 100000;
+
         // auto_partitioner will automatically increase the blocksize if we have
         // a lot of data. It is *important* for the last loop iterations
         // (which have a very small dataset) that it is devisible.
@@ -301,6 +305,9 @@ class Contractor
         constexpr size_t NeighboursGrainSize  = 1;
         constexpr size_t DeleteGrainSize      = 1;
 
+#ifdef _MSC_VER
+#undef constexpr
+#endif
         const NodeID number_of_nodes = contractor_graph->GetNumberOfNodes();
         Percent p(number_of_nodes);
 
