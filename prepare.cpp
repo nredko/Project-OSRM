@@ -309,8 +309,8 @@ int main(int argc, char *argv[])
         unsigned number_of_edge_based_nodes = edge_based_graph_factor->GetNumberOfEdgeBasedNodes();
         BOOST_ASSERT(number_of_edge_based_nodes != std::numeric_limits<unsigned>::max());
         DeallocatingVector<EdgeBasedEdge> edgeBasedEdgeList;
-        static_assert(sizeof(EdgeBasedEdge) == 16,
-                      "changing ImportEdge type has influence on memory consumption!");
+//        static_assert(sizeof(EdgeBasedEdge) == 16,
+//                      "changing ImportEdge type has influence on memory consumption!");
 
         edge_based_graph_factor->GetEdgeBasedEdges(edgeBasedEdgeList);
         std::vector<EdgeBasedNode> node_based_edge_list;
