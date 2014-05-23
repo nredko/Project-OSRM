@@ -177,7 +177,7 @@ find_package(Threads REQUIRED)
 target_link_libraries(osrm-extract ${CMAKE_THREAD_LIBS_INIT})
 
 find_package(TBB REQUIRED)
-if(CMAKE_BUILD_TYPE MATCHES Debug)
+if(WIN32 AND CMAKE_BUILD_TYPE MATCHES Debug)
   set(TBB_LIBRARIES ${TBB_DEBUG_LIBRARIES})
 endif()
 target_link_libraries(osrm-datastore ${TBB_LIBRARIES})
