@@ -63,11 +63,11 @@ void ExtractionContainers::PrepareData(const std::string &output_file_name,
     {
         unsigned number_of_used_nodes = 0;
         unsigned number_of_used_edges = 0;
-        std::chrono::time_point<std::chrono::steady_clock> time1 = std::chrono::steady_clock::now();
+        auto time1 = std::chrono::steady_clock::now();
 
         std::cout << "[extractor] Sorting used nodes        ... " << std::flush;
         stxxl::sort(used_node_id_list.begin(), used_node_id_list.end(), Cmp(), stxxl_memory);
-        std::chrono::time_point<std::chrono::steady_clock> time2 = std::chrono::steady_clock::now();
+        auto time2 = std::chrono::steady_clock::now();
         std::chrono::duration<double> elapsed_seconds = time2 - time1;
         std::cout << "ok, after " << elapsed_seconds.count() << "s" << std::endl;
 
