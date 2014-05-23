@@ -32,6 +32,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <limits>
 
+#ifdef _MSC_VER
+#define constexpr const static
+#endif
+
 constexpr unsigned short atan_table[4096] = {
 0x0000,  0x0014,  0x0028,  0x003d,  0x0051,  0x0065,
 0x007a,  0x008e,  0x00a3,  0x00b7,  0x00cb,  0x00e0,
@@ -785,5 +789,9 @@ inline double atan2_lookup(double y, double x)
     }
     return angle;
 }
+
+#ifdef _MSC_VER
+#undef constexpr
+#endif
 
 #endif // TRIGONOMETRY_TABLES_H
