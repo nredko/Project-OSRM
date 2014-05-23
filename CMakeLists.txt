@@ -29,6 +29,10 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/Util/UUID.cpp UUID.cpp.alwaysbuild
 add_custom_target(UUIDConfigure DEPENDS ${CMAKE_SOURCE_DIR}/Util/UUID.cpp)
 
 set(BOOST_COMPONENTS date_time filesystem iostreams program_options regex system thread)
+if(WIN32)
+  message(STATUS "Windows build, some more boost libraries are used")
+  set(BOOST_COMPONENTS ${BOOST_COMPONENTS} date_time chrono zlib)
+endif()
 
 configure_file(
   ${CMAKE_SOURCE_DIR}/Util/GitDescription.cpp.in
@@ -171,6 +175,10 @@ find_package(Threads REQUIRED)
 target_link_libraries(osrm-extract ${CMAKE_THREAD_LIBS_INIT})
 
 find_package(TBB REQUIRED)
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  set(TBB_LIBRARIES ${TBB_DEBUG_LIBRARIES})
+endif()
+target_link_libraries(osrm-datastore ${TBB_LIBRARIES})
 target_link_libraries(osrm-extract ${TBB_LIBRARIES})
 target_link_libraries(osrm-prepare ${TBB_LIBRARIES})
 target_link_libraries(osrm-routed ${TBB_LIBRARIES})
