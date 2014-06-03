@@ -50,10 +50,8 @@ template <class DataFacadeT> class SearchEngine
         : facade(facade), shortest_path(facade, engine_working_data),
           alternative_path(facade, engine_working_data), distance_table(facade, engine_working_data)
     {
-#ifndef _MSC_VER
-        static_assert(!std::is_pointer<DataFacadeT>(), "don't instantiate with ptr type");
-        static_assert(std::is_object<DataFacadeT>(), "don't instantiate with void, function, or reference");
-#endif
+        static_assert(!std::is_pointer<DataFacadeT>::value, "don't instantiate with ptr type");
+        static_assert(std::is_object<DataFacadeT>::value, "don't instantiate with void, function, or reference");
     }
 
     ~SearchEngine() {}
