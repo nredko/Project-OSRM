@@ -32,11 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iosfwd> //for std::ostream
 #include <string>
 
-#ifndef _MSC_VER
+#include "../typedefs.h"
+
 constexpr float COORDINATE_PRECISION = 1000000.;
-#else
-const static float COORDINATE_PRECISION = 1000000.;
-#endif
 
 struct FixedPointCoordinate
 {

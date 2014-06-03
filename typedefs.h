@@ -47,8 +47,4 @@ constexpr EdgeID SPECIAL_EDGEID = std::numeric_limits<unsigned>::max();
 constexpr unsigned INVALID_NAMEID = std::numeric_limits<unsigned>::max();
 constexpr EdgeWeight INVALID_EDGE_WEIGHT = std::numeric_limits<int>::max();
 
-#ifdef _MSC_VER
-#undef constexpr
-#endif
-
 #endif /* TYPEDEFS_H */

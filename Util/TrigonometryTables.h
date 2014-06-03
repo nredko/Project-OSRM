@@ -29,12 +29,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TRIGONOMETRY_TABLES_H
 
 #include <cmath>
-
 #include <limits>
 
-#ifdef _MSC_VER
-#define constexpr const static
-#endif
+#include "../typedefs.h"
 
 constexpr unsigned short atan_table[4096] = {
 0x0000,  0x0014,  0x0028,  0x003d,  0x0051,  0x0065,
@@ -789,9 +786,5 @@ inline double atan2_lookup(double y, double x)
     }
     return angle;
 }
-
-#ifdef _MSC_VER
-#undef constexpr
-#endif
 
 #endif // TRIGONOMETRY_TABLES_H
