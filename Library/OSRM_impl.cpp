@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../Plugins/NearestPlugin.h"
 #include "../Plugins/TimestampPlugin.h"
 #include "../Plugins/ViaRoutePlugin.h"
+#include "../Plugins/AreaPlugin.h"
 
 #include "../Server/DataStructures/BaseDataFacade.h"
 #include "../Server/DataStructures/InternalDataFacade.h"
@@ -62,6 +63,7 @@ OSRM_impl::OSRM_impl(const ServerPaths &server_paths, const bool use_shared_memo
     RegisterPlugin(new NearestPlugin<BaseDataFacade<QueryEdge::EdgeData>>(query_data_facade));
     RegisterPlugin(new TimestampPlugin<BaseDataFacade<QueryEdge::EdgeData>>(query_data_facade));
     RegisterPlugin(new ViaRoutePlugin<BaseDataFacade<QueryEdge::EdgeData>>(query_data_facade));
+	RegisterPlugin(new AreaPlugin<BaseDataFacade<QueryEdge::EdgeData>>(query_data_facade));
 }
 
 OSRM_impl::~OSRM_impl()

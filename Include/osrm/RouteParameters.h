@@ -65,8 +65,11 @@ struct RouteParameters
 
     void addCoordinate(const boost::fusion::vector<double, double> &coordinates);
 
-    short zoom_level;
-    bool print_instructions;
+	void setTime(const unsigned short seconds);
+
+	short zoom_level;
+	unsigned short time;
+	bool print_instructions;
     bool alternate_route;
     bool geometry;
     bool compression;

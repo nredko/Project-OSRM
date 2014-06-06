@@ -55,7 +55,10 @@ class HelloWorldPlugin : public BasePlugin
         temp_string = IntToString(routeParameters.zoom_level);
         json_result.values["zoom_level"] = temp_string;
 
-        temp_string = IntToString(routeParameters.check_sum);
+		temp_string = IntToString(routeParameters.time);
+		json_result.values["time"] = temp_string;
+		
+		temp_string = IntToString(routeParameters.check_sum);
         json_result.values["check_sum"] = temp_string;
         json_result.values["instructions"] = (routeParameters.print_instructions ? "yes" : "no");
         json_result.values["geometry"] = (routeParameters.geometry ? "yes" : "no");

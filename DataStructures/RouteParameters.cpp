@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 RouteParameters::RouteParameters()
     : zoom_level(18), print_instructions(false), alternate_route(true), geometry(true),
-      compression(true), deprecatedAPI(false), check_sum(-1)
+	compression(true), deprecatedAPI(false), check_sum(-1), time(0)
 {
 }
 
@@ -80,3 +80,6 @@ void RouteParameters::addCoordinate(const boost::fusion::vector<double, double> 
     const int lon = COORDINATE_PRECISION * boost::fusion::at_c<1>(transmitted_coordinates);
     coordinates.emplace_back(lat, lon);
 }
+
+void RouteParameters::setTime(const unsigned short seconds) { time = seconds; }
+
