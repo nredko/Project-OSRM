@@ -81,7 +81,7 @@ void Connection::handle_read(const boost::system::error_code &e, std::size_t byt
             request_handler.handle_request(request, reply);
 
             Header compression_header;
-            std::vector<char> compressed_output;
+//            std::vector<char> compressed_output;                  // CRASH FIX
             std::vector<boost::asio::const_buffer> output_buffer;
 
             // compress the result w/ gzip/deflate if requested
@@ -91,10 +91,10 @@ void Connection::handle_read(const boost::system::error_code &e, std::size_t byt
                 compression_header.name = "Content-Encoding";
                 compression_header.value = "deflate";
                 reply.headers.insert(reply.headers.begin(), compression_header);
-                compressBufferCollection(reply.content, compression_type, compressed_output);
-                reply.setSize(compressed_output.size());
+                compressBufferCollection(reply.content, compression_type, reply.compressed_output);
+                reply.setSize(reply.compressed_output.size());
                 output_buffer = reply.HeaderstoBuffers();
-                output_buffer.push_back(boost::asio::buffer(compressed_output));
+                output_buffer.push_back(boost::asio::buffer(reply.compressed_output));
                 boost::asio::async_write(
                     TCP_socket,
                     output_buffer,
@@ -106,10 +106,10 @@ void Connection::handle_read(const boost::system::error_code &e, std::size_t byt
                 compression_header.name = "Content-Encoding";
                 compression_header.value = "gzip";
                 reply.headers.insert(reply.headers.begin(), compression_header);
-                compressBufferCollection(reply.content, compression_type, compressed_output);
-                reply.setSize(compressed_output.size());
+                compressBufferCollection(reply.content, compression_type, reply.compressed_output);
+                reply.setSize(reply.compressed_output.size());
                 output_buffer = reply.HeaderstoBuffers();
-                output_buffer.push_back(boost::asio::buffer(compressed_output));
+                output_buffer.push_back(boost::asio::buffer(reply.compressed_output));
                 boost::asio::async_write(
                     TCP_socket,
                     output_buffer,

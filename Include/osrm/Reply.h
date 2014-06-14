@@ -59,6 +59,7 @@ class Reply
     std::vector<boost::asio::const_buffer> toBuffers();
     std::vector<boost::asio::const_buffer> HeaderstoBuffers();
     std::vector<char> content;
+    std::vector<char> compressed_output;
     static Reply StockReply(status_type status);
     void setSize(const unsigned size);
     void SetUncompressedSize();

@@ -47,7 +47,15 @@ struct FixedPointCoordinate
     bool isSet() const;
     bool isValid() const;
     bool operator==(const FixedPointCoordinate &other) const;
-	bool operator<(const FixedPointCoordinate &other) const { return lat < other.lat && lon < other.lon; };
+	bool operator<(const FixedPointCoordinate &other) const { 
+		if (lat < other.lat)
+			return true;
+		if (lat > other.lat)
+			return false;
+		// ==
+		return (lon < other.lon);
+//		return lat < other.lat && lon < other.lon; 
+	};
 
     static double
     ApproximateDistance(const int lat1, const int lon1, const int lat2, const int lon2);
