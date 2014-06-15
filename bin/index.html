@@ -1,0 +1,134 @@
+<html><head><title>OSRM test map</title>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+</head><body><div style="width:100%; height:100%" id="map"></div>
+<script type='text/javascript'>
+
+
+var TIME=20;
+
+
+
+if(window.location.hash.length > 0){
+    strLoc = window.location.hash.substring(1);
+} else {
+    strLoc = "54.8625731,83.0933268"
+//file:///D:/home/ConcaveHull/index.html#54.93868,83.07192
+}
+strCoords=strLoc.split(',');
+start = L.latLng(parseFloat(strCoords[0]), parseFloat(strCoords[1]));
+
+JSONP = {
+    fences: {},
+    callbacks: {},
+    timeouts: {},
+    timers: {},
+    late: function() {},    
+    empty: function() {},
+    call: function(source, callback_function, timeout_function, timeout, id, parameters) {
+        if (JSONP.fences[id] == true)
+            return false;
+        JSONP.fences[id] = true;
+        JSONP.timeouts[id] = function(response) {
+            try {
+                timeout_function(response, parameters);
+            } finally {
+                JSONP.callbacks[id] = JSONP.late;             // clean functions
+                JSONP.timeouts[id] = JSONP.empty;
+                JSONP.fences[id] = undefined;                      // clean fence
+            }
+        };
+        JSONP.callbacks[id] = function(response) {
+            clearTimeout(JSONP.timers[id]);                        // clear timeout timer
+            JSONP.timers[id] = undefined;
+            try {
+                callback_function(response, parameters);                // actual wrapped callback 
+            } finally {
+                JSONP.callbacks[id] = JSONP.empty;            // clean functions
+                JSONP.timeouts[id] = JSONP.late;
+                JSONP.fences[id] = undefined;                      // clean fence
+            }
+        };
+        var jsonp = document.getElementById('jsonp_'+id);
+        if(jsonp)
+            jsonp.parentNode.removeChild(jsonp);
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.id = 'jsonp_'+id;
+        script.src = source.replace(/%jsonp/,"JSONP.callbacks."+id);
+        document.head.appendChild(script);
+        JSONP.timers[id] = setTimeout(JSONP.timeouts[id], timeout);
+        return true;
+    },
+    clear: function(id) {
+        clearTimeout(JSONP.timers[id]);                    // clear timeout timer
+        JSONP.callbacks[id] = JSONP.empty;            // clean functions
+        JSONP.timeouts[id] = JSONP.empty;
+        JSONP.fences[id] = undefined;                      // clean fence
+        var jsonp = document.getElementById('jsonp_'+id);
+        if(jsonp)
+            jsonp.parentNode.removeChild(jsonp);        
+    },
+    reset: function() {
+        JSONP.fences = {};
+        JSONP.callbacks = {};
+        JSONP.timeouts = {};
+        JSONP.timers = {};
+    }
+};
+
+
+var map = L.map('map').setView(start, 13);;
+map.addLayer(new L.TileLayer('http://{s}.tiles.mapbox.com/v3/nredko.ifiekjj3/{z}/{x}/{y}.png'));
+var marker = L.marker(start, { draggable: true }).addTo(map);
+map.on('click', function(e) { marker.setLatLng(e.latlng); marker.fire('dragend');})
+marker.on('dragend', function(event) {
+    var marker = event.target;  
+    var latLng = marker.getLatLng();
+//     JSONP.call('http://gis.magazinmagazinov.ru:5000/distance?jsonp=show&time='+TIME+'&loc='+latLng.lat.toFixed(5)+','+latLng.lng.toFixed(5), 'JSONP', function(){}, 10000, 'id'+latLng.lat+latLng.lng, {}); 
+     JSONP.call('http://127.0.0.1:5000/area?jsonp=show&time='+TIME+'&loc='+latLng.lat.toFixed(5)+','+latLng.lng.toFixed(5), 'JSONP', function(){}, 10000, 'id'+latLng.lat+latLng.lng, {}); 
+ });
+marker.fire('dragend');
+var hullPolygon;
+var pointsLayer;
+
+
+var DEBUG = true;
+var DEBUG1 = true;
+
+
+function show(obj){
+    if(!(hullPolygon === undefined))
+        map.removeLayer(hullPolygon);
+    if(!(pointsLayer === undefined))
+        map.removeLayer(pointsLayer);
+    //marker.setLatLng(new L.LatLng(obj.points[0][0], obj.points[0][1]));
+    var pts = [];
+    for(var i = 1; i < obj.points.length; i++){
+        var p = new L.latLng(obj.points[i]);
+        p.name = ''+i;
+        p.x = p.lng;
+        p.y = p.lat2y;
+        pts.push(p);
+    }
+    pointsLayer = L.layerGroup();
+    for(i = 0; i < pts.length; i ++){
+        pointsLayer.addLayer(L.circleMarker(pts[i], {title: pts[i].name, color:"#000", radius:2, fillOpacity:1}));
+        //var myIcon = L.divIcon({className:'label', html:''+pts[i].name});
+        //L.marker(pts[i], {icon: myIcon}).addTo(map);
+
+    }
+    pointsLayer.addTo(map);
+    map.fitBounds(pts);
+/*
+    var hull = pts.concaveHull(86000)
+    var hullP = L.polygon(hull, {color: '#00F', fillColor: '#00F', fillOpacity: 0.5, weight: 1});
+    console.log(hull.length + " points in hull.");
+    hullP.addTo(map);
+*/
+}
+
+</script>
+</body>
+</html>
+
