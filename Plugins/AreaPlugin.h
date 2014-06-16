@@ -31,7 +31,6 @@
 
 #define RANGE_LIMIT_SHIFT   10
 #define RANGE_LIMIT_MINUS_ONE   ((1 << RANGE_LIMIT_SHIFT)-1)
-#define MAX_POINTS_DIST     99
 
 struct _QueueNodeData {
     NodeID      m_nodeId;
@@ -251,7 +250,8 @@ public:
 
         JSON::Array json_locations;
         unsigned counter = 0;
-		std::vector<FixedPointCoordinate> hull = concaveHull(coordinates);
+		std::vector<FixedPointCoordinate> hull;
+		concaveHull(coordinates, hull);
 		for (int i = 0; i < hull.size(); i++)
         {
             JSON::Array json_coordinates;
