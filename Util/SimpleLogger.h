@@ -127,7 +127,11 @@ class SimpleLogger
         std::lock_guard<std::mutex> lock(get_mutex());
         if (!LogPolicy::GetInstance().IsMute())
         {
+#ifndef _MSC_VER
             const bool is_terminal = isatty(fileno(stdout));
+#else
+			const bool is_terminal = false;
+#endif
             switch (level)
             {
             case logINFO:
