@@ -59,6 +59,17 @@ private:
 		};
 	};
 
+	struct AllSessionInfo {
+		int									m_max_time;
+		std::set<FixedPointCoordinate>		m_coordinates;
+		boost::unordered_map<NodeID, int>	m_added;
+		boost::unordered_map<NodeID, struct _AddedData> m_nodes;
+		int									m_ranges_num;
+		std::queue<struct _QueueNodeData>*	m_node_queues_ptr;
+
+		AllSessionInfo() : m_max_time(0), m_ranges_num(0), m_node_queues_ptr(0) {}
+	};
+
 private:
     std::unordered_map<std::string, unsigned> descriptor_table;
     std::shared_ptr<SearchEngine<DataFacadeT>> search_engine_ptr;
@@ -70,19 +81,18 @@ public:
 
         descriptor_table.emplace("json", 0);
         descriptor_table.emplace("gpx", 1);
-
-        m_start_phantom_is_reverse = false;
     }
 
     virtual ~AreaPlugin() {}
 
     const std::string GetDescriptor() const { return descriptor_string; }
 
+
+
     bool GetCoordsForEdgeID(NodeID edge_id, 
                             FixedPointCoordinate& coord_out_start, 
                             FixedPointCoordinate& coord_out_end,
-                            std::set<FixedPointCoordinate>& coordinates, 
-                            bool& compressed_flag)      // std::set<FixedPointCoordinate>& coordinates)
+                            std::set<FixedPointCoordinate>& coordinates)
     {
         if (!facade->EdgeIsCompressed(edge_id))
         {
@@ -93,8 +103,6 @@ public:
         }
         else
         {
-            compressed_flag = true;
-
             ///// пока хз что делать с пачкой координат, отдаем 0-ую
             std::vector<unsigned> id_vector;
             facade->GetUncompressedGeometry(facade->GetGeometryIndexForEdgeID(edge_id),
@@ -132,36 +140,30 @@ public:
             return;
         }
 
-        unsigned short route_time_limit = route_parameters.time * 20;
+        unsigned short route_time_limit = route_parameters.time * 10;
 
         //// DEBUG ONLY
 //      route_time_limit = 100;
         ////
 
-        m_start_phantom_is_reverse = false;
+		AllSessionInfo session_info;
+		session_info.m_max_time = route_time_limit;
+
+
         PhantomNode startPhantomNode;
         // A phantom node is a point on the closest edge based node, where the route starts or ends
         facade->FindPhantomNodeForCoordinate(route_parameters.coordinates[0],
 											startPhantomNode,
                                             route_parameters.zoom_level);
         
-        std::set<FixedPointCoordinate> coordinates;
-//		coordinates.insert(startPhantomNode.location);
-
 		NodeID nodeId = startPhantomNode.forward_node_id;
-        if (UINT_MAX == nodeId) {
+        if (UINT_MAX == nodeId)
 			nodeId = startPhantomNode.reverse_node_id;
-            
-            m_start_phantom_is_reverse = true;                  // в этом случае у нас артефакты прут, надо думать почему и чинить. пока заткнул флагом
-        }
 
 		/////////
-        boost::unordered_map<NodeID, int> added;
-        boost::unordered_map<NodeID, struct _AddedData> nodes;
-
 		//// мы разбиваем время на куски по RANGE_LIMIT и не переходим к следующей очереди пока в предыдущих есть чего
-        int ranges_num = (route_parameters.time + RANGE_LIMIT_MINUS_ONE) >> RANGE_LIMIT_SHIFT;
-        std::queue<struct _QueueNodeData>* node_queues_ptr = new std::queue<struct _QueueNodeData>[ranges_num];
+        session_info.m_ranges_num = (route_parameters.time + RANGE_LIMIT_MINUS_ONE) >> RANGE_LIMIT_SHIFT;
+		session_info.m_node_queues_ptr = new std::queue<struct _QueueNodeData>[session_info.m_ranges_num];
         
         //
         if (UINT_MAX != nodeId)
@@ -177,7 +179,7 @@ public:
 					int vector_size = id_vector.size();
 					for (int ii = 0; ii < vector_size; ++ii) {
 						FixedPointCoordinate to_g_coord = facade->GetCoordinateOfNode(id_vector[ii]);
-						coordinates.insert(to_g_coord);
+						session_info.m_coordinates.insert(to_g_coord);
 						if (0 == ii)
 							first_node_start = to_g_coord;
 						if (vector_size-1 == ii)
@@ -187,10 +189,8 @@ public:
 			}
 
             add_to_queue(nodeId,
-				first_node_start, first_node_end, 0,
-                ranges_num,
-                node_queues_ptr,
-                added);
+						first_node_start, first_node_end, 0,
+						session_info);
         }
 
 		///////////////////////////////////////////////////////
@@ -199,9 +199,9 @@ public:
 #endif
 
         int cur_queue_index = 0;
-        while (cur_queue_index < ranges_num)
+		while (cur_queue_index < session_info.m_ranges_num)
         {
-            std::queue<struct _QueueNodeData>* cur_queue_ptr = &node_queues_ptr[cur_queue_index];
+            std::queue<struct _QueueNodeData>* cur_queue_ptr = &(session_info.m_node_queues_ptr[cur_queue_index]);
             cur_queue_index++;
 
             // процессим все точки в очереди
@@ -210,20 +210,12 @@ public:
                 struct _QueueNodeData qd = cur_queue_ptr->front();
                 cur_queue_ptr->pop();
 
-                // TODO: надо оптимизировать передачу параметров через структуру
-                AddNextNode(qd.m_nodeId,
-                    qd.m_data,
-                    nodes,
-                    route_time_limit,
-                    added,
-                    ranges_num,
-                    node_queues_ptr, 
-                    coordinates);
+                AddNextNode(qd.m_nodeId, qd.m_data, session_info);
 
 #ifdef _DEBUG
                 n++;
 //              if (n == 6)
-//                  coordinates.clear();
+//                  session_info.m_coordinates.clear();
 //              if (n > 6)
 //                  break;
 #endif
@@ -235,23 +227,23 @@ public:
         // TODO: тут надо пробежаться и те точки которые уже в points засунуьт в set чтобы они повторно не залезли
         
         //
-        for (boost::unordered_map<NodeID, struct _AddedData>::iterator it = nodes.begin(); it != nodes.end(); it++) {
+		for (boost::unordered_map<NodeID, struct _AddedData>::iterator it = session_info.m_nodes.begin(); it != session_info.m_nodes.end(); it++) {
             const FixedPointCoordinate& coord_start = (*it).second.m_coords_start;
-            if (coordinates.find(coord_start) == coordinates.end())
-                coordinates.insert(coord_start);
+			if (session_info.m_coordinates.find(coord_start) == session_info.m_coordinates.end())
+				session_info.m_coordinates.insert(coord_start);
             
             const FixedPointCoordinate& coord_end = (*it).second.m_coords_end;
             if (coord_start == coord_end)
                 continue;
-            if (coordinates.find(coord_end) == coordinates.end())
-                coordinates.insert(coord_end);
+			if (session_info.m_coordinates.find(coord_end) == session_info.m_coordinates.end())
+				session_info.m_coordinates.insert(coord_end);
         }
 
         //
-        delete[] node_queues_ptr; node_queues_ptr = 0;
+		delete[] session_info.m_node_queues_ptr; session_info.m_node_queues_ptr = 0;
         
         
-        SimpleLogger().Write(logINFO) << "Num points: " << coordinates.size();
+		SimpleLogger().Write(logINFO) << "Num points: " << session_info.m_coordinates.size();
 
         
         ///// Reply to request
@@ -263,6 +255,7 @@ public:
 
         JSON::Array json_locations;
         unsigned counter = 0;
+
 		std::vector<FixedPointCoordinate> hull;
 		concaveHull(coordinates, hull);
 
@@ -298,20 +291,15 @@ private:
     
     void AddNextNode(NodeID nodeId,
 					const _AddedData& coord_data,
-					boost::unordered_map<NodeID, struct _AddedData>& nodes,
-					int max_time,
-					boost::unordered_map<NodeID, int>& added,
-					int ranges_num,
-					std::queue<struct _QueueNodeData>* node_queues_ptr,
-					std::set<FixedPointCoordinate>& coordinates)
+					AllSessionInfo& session_info)
     {
 		int cur_time = coord_data.m_time;
 
-        if (added.find(nodeId) != added.end()) {
-            if (added[nodeId] <= cur_time)
+		if (session_info.m_added.find(nodeId) != session_info.m_added.end()) {
+			if (session_info.m_added[nodeId] <= cur_time)
                 return;
         }
-		added[nodeId] = cur_time;
+		session_info.m_added[nodeId] = cur_time;
 
         //// проверим что у нас есть хотя бы одна edge по которой можно пойти
         bool check_forward = false;
@@ -341,25 +329,15 @@ private:
                 //// Насколько я понимаю это координаты для target_node_id, который пойдет в add_to_queue, т.к. по самому target_node_id не найти координаты - передаем в add_to_queue(...)
                 FixedPointCoordinate coord_of_node_start;
                 FixedPointCoordinate coord_of_node_end;
-                boost::unordered_map<NodeID, struct _AddedData>::iterator mit = nodes.find(to);
-                if (nodes.end() == mit)
+				boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(to);
+				if (session_info.m_nodes.end() == mit)
                 {
-                    //coord_of_node = facade->GetCoordinateOfNode(to);
-                    bool compressed_flag = false;
-                    if (GetCoordsForEdgeID(to, coord_of_node_start, coord_of_node_end, coordinates, compressed_flag))
+					if (GetCoordsForEdgeID(to, coord_of_node_start, coord_of_node_end, session_info.m_coordinates))
                     {
                         struct _AddedData add_data(cur_time + data.distance, coord_of_node_start, coord_of_node_end);
-                        nodes[to] = add_data;
+						session_info.m_nodes[to] = add_data;
 
-                        //                if (cur_time+data.distance < max_time)
-//                        if (!compressed_flag) 
-						{
-                            if (m_start_phantom_is_reverse)
-                                m_start_phantom_is_reverse = false;
-                            else
-								check_distance(coord_data, add_data, coordinates);
-//								check_distance(coord_data.m_coords_end, coord_of_node_end, coordinates);
-                        }
+						check_distance(coord_data, add_data, session_info.m_coordinates);
                     }
                     else {
                         //// такого не должно случиться, если попали сюда - где то косяк
@@ -374,8 +352,11 @@ private:
                 }
 
                 //
-                if (cur_time + data.distance < max_time)
-					add_to_queue(target_node_id, coord_of_node_start, coord_of_node_end, cur_time + data.distance, ranges_num, node_queues_ptr, added);
+                if (cur_time + data.distance < session_info.m_max_time)
+					add_to_queue(target_node_id, 
+								coord_of_node_start, coord_of_node_end, 
+								cur_time + data.distance, 
+								session_info);
             }
             else
             {
@@ -388,18 +369,16 @@ private:
 								target_node_id,
 								out_coord_of_target_start,
 								out_coord_of_target_end,
-								nodes,
 								cur_time,
-								max_time,
-								added,
-								ranges_num,
-								node_queues_ptr,
-								coordinates);
+								session_info);
 
                 ////////// т.к. мы в ProcessShortcut добавляем точки в очередь, то вот это добавление возможно и не нужно(тем более что не ясно как получать coord_of_target)
                 // между nodeId и шоткатом тоже указывается расстояние, которое потом складывается из внутренних растояний
-                if (cur_time + data.distance < max_time)
-					add_to_queue(target_node_id, out_coord_of_target_start, out_coord_of_target_end, cur_time + data.distance, ranges_num, node_queues_ptr, added);
+				if (cur_time + data.distance < session_info.m_max_time)
+					add_to_queue(target_node_id, 
+								out_coord_of_target_start, out_coord_of_target_end, 
+								cur_time + data.distance, 
+								session_info);
             }
         }
     }
@@ -409,9 +388,7 @@ private:
 					const FixedPointCoordinate& start, 
 					const FixedPointCoordinate& end,
 					int cur_time,
-					int ranges_num,
-					std::queue<struct _QueueNodeData>* node_queues_ptr,
-					boost::unordered_map<NodeID, int>& added)
+					AllSessionInfo& session_info)
     {
 #ifdef _DEBUG
         if (nodeId == 4294967295) {
@@ -419,15 +396,15 @@ private:
         }
 #endif
 
-        if (added.find(nodeId) != added.end()) {
-            if (added[nodeId] <= cur_time)
+		if (session_info.m_added.find(nodeId) != session_info.m_added.end()) {
+			if (session_info.m_added[nodeId] <= cur_time)
                 return;
         }
 
-		int range = get_range_by_cur_time(ranges_num, cur_time);
+		int range = get_range_by_cur_time(session_info.m_ranges_num, cur_time);
 
 		struct _QueueNodeData qd(nodeId, start, end, cur_time);
-        node_queues_ptr[range].push(qd);
+		session_info.m_node_queues_ptr[range].push(qd);
         
     }
 
@@ -438,13 +415,8 @@ private:
 						NodeID end_node_id,
 						FixedPointCoordinate& out_coord_of_end_start,       // <<< out
 						FixedPointCoordinate& out_coord_of_end_end,       // <<< out
-						boost::unordered_map<NodeID, struct _AddedData>& nodes,
 						int cur_time,
-						int max_time,
-						boost::unordered_map<NodeID, int>& added,
-						int ranges_num,
-						std::queue<struct _QueueNodeData>* node_queues_ptr,
-						std::set<FixedPointCoordinate>& coordinates)
+						AllSessionInfo& session_info)
     {
         //    std::cout << "------" << std::endl;
         //    std::cout << "PROCESS shortcut: startId=" << start_node_id << " (" << coord_of_start_node_start.lat << "," << coord_of_start_node_start.lon << ")" << "   middleId=" << shortcut_node_id << "  endId=" << end_node_id << std::endl;
@@ -465,23 +437,17 @@ private:
                 //// Насколько я понимаю это координаты для target2, который пойдет в add_to_queue, т.к. по самому target2 не найти координаты - передаем в add_to_queue(...)
                 FixedPointCoordinate coord_of_node_start;
                 FixedPointCoordinate coord_of_node_end;
-                boost::unordered_map<NodeID, struct _AddedData>::iterator mit = nodes.find(data2.id);
-                if (nodes.end() == mit)
+                boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(data2.id);
+				if (session_info.m_nodes.end() == mit)
                 {
-                    bool compressed_flag = false;
-                    if (GetCoordsForEdgeID(data2.id, coord_of_node_start, coord_of_node_end, coordinates, compressed_flag))
+					if (GetCoordsForEdgeID(data2.id, coord_of_node_start, coord_of_node_end, session_info.m_coordinates))
                     {
                         struct _AddedData add_data(cur_time + data2.distance, coord_of_node_start, coord_of_node_end);
-                        nodes[data2.id] = add_data;
+						session_info.m_nodes[data2.id] = add_data;
 
-//                        if (!compressed_flag) 
-						{
-							if (m_start_phantom_is_reverse)
-								m_start_phantom_is_reverse = false;
-							else
-								check_distance(_AddedData(0, coord_of_start_node_start, coord_of_start_node_end), add_data, coordinates);
-//                                check_distance(coord_of_start_node_start, coord_of_node_start, coordinates);
-                        }
+						check_distance(_AddedData(0, coord_of_start_node_start, coord_of_start_node_end), 
+									add_data, 
+									session_info.m_coordinates);
                     }
                     else {
                         assert(false);
@@ -496,8 +462,11 @@ private:
 				coords_of_shortcut_start = coord_of_node_start;
 				coords_of_shortcut_end = coord_of_node_end;
 
-                if (cur_time + data2.distance < max_time)
-					add_to_queue(target2, coord_of_node_start, coord_of_node_end, cur_time + data2.distance, ranges_num, node_queues_ptr, added);
+				if (cur_time + data2.distance < session_info.m_max_time)
+					add_to_queue(target2, 
+								coord_of_node_start, coord_of_node_end, 
+								cur_time + data2.distance, 
+								session_info);
             }
             else {
 				ProcessShortcut(start_node_id,
@@ -507,13 +476,8 @@ private:
 								shortcut_node_id,
 								coords_of_shortcut_start,		// out 
 								coords_of_shortcut_end,		// out
-								nodes,
 								cur_time,
-								max_time,
-								added,
-								ranges_num,
-								node_queues_ptr,
-								coordinates);
+								session_info);
             }
 
             // если здесь, то путь до шотката прописали, учитываем это расстояние
@@ -521,7 +485,7 @@ private:
         }
 
         // нет смысла двигаться дальше полученой точки если время до нее уже более максимума
-        if (cur_time >= max_time)
+		if (cur_time >= session_info.m_max_time)
             return;
 
         //
@@ -539,23 +503,17 @@ private:
                 //// Насколько я понимаю это координаты для target2, который пойдет в add_to_queue, т.к. по самому target2 не найти координаты - передаем в add_to_queue(...)
                 FixedPointCoordinate coord_of_node_start;
                 FixedPointCoordinate coord_of_node_end;
-                boost::unordered_map<NodeID, struct _AddedData>::iterator mit = nodes.find(data2.id);
-                if (nodes.end() == mit)
+				boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(data2.id);
+				if (session_info.m_nodes.end() == mit)
                 {
-                    bool compressed_flag = false;
-                    if (GetCoordsForEdgeID(data2.id, coord_of_node_start, coord_of_node_end, coordinates, compressed_flag))
+					if (GetCoordsForEdgeID(data2.id, coord_of_node_start, coord_of_node_end, session_info.m_coordinates))
                     {
                         struct _AddedData add_data(cur_time + data2.distance, coord_of_node_start, coord_of_node_end);
-                        nodes[data2.id] = add_data;
+						session_info.m_nodes[data2.id] = add_data;
 
-//                        if (!compressed_flag) 
-						{
-                            if (m_start_phantom_is_reverse)
-                                m_start_phantom_is_reverse = false;
-                            else
-								check_distance(_AddedData(0, coords_of_shortcut_start, coords_of_shortcut_end), add_data, coordinates);
-//                                check_distance(coords_of_shortcut, coord_of_node_start, coordinates);
-                        }
+						check_distance(_AddedData(0, coords_of_shortcut_start, coords_of_shortcut_end), 
+									add_data, 
+									session_info.m_coordinates);
                     }
                     else {
                         return;
@@ -569,8 +527,11 @@ private:
 				out_coord_of_end_start = coord_of_node_start;
                 out_coord_of_end_end = coord_of_node_end;
 
-                if (cur_time + data2.distance < max_time)
-					add_to_queue(target2, coord_of_node_start, coord_of_node_end, cur_time + data2.distance, ranges_num, node_queues_ptr, added);
+				if (cur_time + data2.distance < session_info.m_max_time)
+					add_to_queue(target2, 
+								coord_of_node_start, coord_of_node_end, 
+								cur_time + data2.distance, 
+								session_info);
             }
             else {
 				ProcessShortcut(shortcut_node_id,
@@ -580,13 +541,8 @@ private:
 								end_node_id,
 								out_coord_of_end_start,
 								out_coord_of_end_end,
-								nodes,
 								cur_time,
-								max_time,
-								added,
-								ranges_num,
-								node_queues_ptr,
-								coordinates);
+								session_info);
             }
 
             // если здесь, то путь до шотката прописали, учитываем это расстояние
@@ -665,7 +621,6 @@ private:
 private:
     std::string     descriptor_string;
     DataFacadeT *   facade;
-    bool            m_start_phantom_is_reverse;
 };
 
 #endif // AREA_PLUGIN_H
