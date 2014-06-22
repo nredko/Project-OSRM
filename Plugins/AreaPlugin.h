@@ -32,25 +32,33 @@
 #define RANGE_LIMIT_SHIFT   10
 #define RANGE_LIMIT_MINUS_ONE   ((1 << RANGE_LIMIT_SHIFT)-1)
 
-struct _QueueNodeData {
-    NodeID      m_nodeId;
-    FixedPointCoordinate m_coords;
-    int         m_time;
-
-    _QueueNodeData(NodeID nodeId, const FixedPointCoordinate& c, int time) : m_nodeId(nodeId), m_time(time), m_coords(c) {};
-};
-
-struct _AddedData {
-    int         m_time;
-    FixedPointCoordinate m_coords_start;
-    FixedPointCoordinate m_coords_end;
-
-    _AddedData() : m_time(0) {}
-    _AddedData(int time, FixedPointCoordinate& start, FixedPointCoordinate& end) : m_time(time), m_coords_start(start), m_coords_end(end) {}
-};
 
 template <class DataFacadeT> class AreaPlugin : public BasePlugin
 {
+private:
+	struct _AddedData {
+		int						m_time;
+		FixedPointCoordinate	m_coords_start;
+		FixedPointCoordinate	m_coords_end;
+
+		_AddedData() : m_time(0) {}
+		_AddedData(int time, const FixedPointCoordinate& start, const FixedPointCoordinate& end) : m_time(time), m_coords_start(start), m_coords_end(end) {}
+	};
+
+	struct _QueueNodeData {
+		NodeID				m_nodeId;
+		struct _AddedData	m_data;
+
+		_QueueNodeData(NodeID nodeId, 
+					const FixedPointCoordinate& start, 
+					const FixedPointCoordinate& end,
+					int time) : m_nodeId(nodeId), m_data(time, start, end) {
+		};
+
+		_QueueNodeData(NodeID nodeId, const struct _AddedData& data) : m_nodeId(nodeId), m_data(data) {
+		};
+	};
+
 private:
     std::unordered_map<std::string, unsigned> descriptor_table;
     std::shared_ptr<SearchEngine<DataFacadeT>> search_engine_ptr;
@@ -126,60 +134,66 @@ public:
 
         unsigned short route_time_limit = route_parameters.time * 20;
 
-        //// DEBU ONLY
+        //// DEBUG ONLY
 //      route_time_limit = 100;
         ////
 
         m_start_phantom_is_reverse = false;
-        PhantomNode startPhantom;
+        PhantomNode startPhantomNode;
         // A phantom node is a point on the closest edge based node, where the route starts or ends
         facade->FindPhantomNodeForCoordinate(route_parameters.coordinates[0],
-                                            startPhantom,
+											startPhantomNode,
                                             route_parameters.zoom_level);
         
         std::set<FixedPointCoordinate> coordinates;
-        coordinates.insert(startPhantom.location);
+//		coordinates.insert(startPhantomNode.location);
 
-        NodeID nodeId = startPhantom.forward_node_id;
+		NodeID nodeId = startPhantomNode.forward_node_id;
         if (UINT_MAX == nodeId) {
-            nodeId = startPhantom.reverse_node_id;
+			nodeId = startPhantomNode.reverse_node_id;
             
             m_start_phantom_is_reverse = true;                  // в этом случае у нас артефакты прут, надо думать почему и чинить. пока заткнул флагом
         }
 
-        if (UINT_MAX != nodeId) {
-            if (startPhantom.packed_geometry_id != UINT_MAX) {
-                std::vector<unsigned> id_vector;
-                facade->GetUncompressedGeometry(startPhantom.packed_geometry_id, id_vector);
-                if (!id_vector.empty()) {
-                    for (int ii = 0; ii < id_vector.size(); ++ii) {
-                        FixedPointCoordinate to_g_coord = facade->GetCoordinateOfNode(id_vector[ii]);
-                        coordinates.insert(to_g_coord);
-                    }
-                }
-            }
-        }
-
+		/////////
         boost::unordered_map<NodeID, int> added;
         boost::unordered_map<NodeID, struct _AddedData> nodes;
 
-        // мы разбиваем время на куски по RANGE_LIMIT и не переходим к следующей очереди пока в предыдущих есть чего
-
+		//// мы разбиваем время на куски по RANGE_LIMIT и не переходим к следующей очереди пока в предыдущих есть чего
         int ranges_num = (route_parameters.time + RANGE_LIMIT_MINUS_ONE) >> RANGE_LIMIT_SHIFT;
         std::queue<struct _QueueNodeData>* node_queues_ptr = new std::queue<struct _QueueNodeData>[ranges_num];
         
         //
-        // TODO: надо оптимизировать передачу параметров через структуру
         if (UINT_MAX != nodeId)
         {
+			FixedPointCoordinate first_node_start = startPhantomNode.location;
+			FixedPointCoordinate first_node_end = startPhantomNode.location;
+
+			if (startPhantomNode.packed_geometry_id != UINT_MAX) 
+			{
+				std::vector<unsigned> id_vector;
+				facade->GetUncompressedGeometry(startPhantomNode.packed_geometry_id, id_vector);
+				if (!id_vector.empty()) {
+					int vector_size = id_vector.size();
+					for (int ii = 0; ii < vector_size; ++ii) {
+						FixedPointCoordinate to_g_coord = facade->GetCoordinateOfNode(id_vector[ii]);
+						coordinates.insert(to_g_coord);
+						if (0 == ii)
+							first_node_start = to_g_coord;
+						if (vector_size-1 == ii)
+							first_node_end = to_g_coord;
+					}
+				}
+			}
+
             add_to_queue(nodeId,
-                startPhantom.location,
-                0,
+				first_node_start, first_node_end, 0,
                 ranges_num,
                 node_queues_ptr,
                 added);
         }
 
+		///////////////////////////////////////////////////////
 #ifdef _DEBUG
         int n = 0;
 #endif
@@ -198,9 +212,8 @@ public:
 
                 // TODO: надо оптимизировать передачу параметров через структуру
                 AddNextNode(qd.m_nodeId,
-                    qd.m_coords,
+                    qd.m_data,
                     nodes,
-                    qd.m_time,
                     route_time_limit,
                     added,
                     ranges_num,
@@ -284,20 +297,21 @@ public:
 private:
     
     void AddNextNode(NodeID nodeId,
-        const FixedPointCoordinate& coord_of_nodeId,
-        boost::unordered_map<NodeID, struct _AddedData>& nodes,
-        int cur_time,
-        int max_time,
-        boost::unordered_map<NodeID, int>& added,
-        int ranges_num,
-        std::queue<struct _QueueNodeData>* node_queues_ptr,
-        std::set<FixedPointCoordinate>& coordinates)
+					const _AddedData& coord_data,
+					boost::unordered_map<NodeID, struct _AddedData>& nodes,
+					int max_time,
+					boost::unordered_map<NodeID, int>& added,
+					int ranges_num,
+					std::queue<struct _QueueNodeData>* node_queues_ptr,
+					std::set<FixedPointCoordinate>& coordinates)
     {
+		int cur_time = coord_data.m_time;
+
         if (added.find(nodeId) != added.end()) {
             if (added[nodeId] <= cur_time)
                 return;
         }
-        added[nodeId] = cur_time;
+		added[nodeId] = cur_time;
 
         //// проверим что у нас есть хотя бы одна edge по которой можно пойти
         bool check_forward = false;
@@ -338,11 +352,13 @@ private:
                         nodes[to] = add_data;
 
                         //                if (cur_time+data.distance < max_time)
-                        if (!compressed_flag) {
+//                        if (!compressed_flag) 
+						{
                             if (m_start_phantom_is_reverse)
                                 m_start_phantom_is_reverse = false;
                             else
-                                check_distance(coord_of_nodeId, coord_of_node_end, coordinates);
+								check_distance(coord_data, add_data, coordinates);
+//								check_distance(coord_data.m_coords_end, coord_of_node_end, coordinates);
                         }
                     }
                     else {
@@ -359,38 +375,43 @@ private:
 
                 //
                 if (cur_time + data.distance < max_time)
-                    add_to_queue(target_node_id, coord_of_node_end, cur_time + data.distance, ranges_num, node_queues_ptr, added);
+					add_to_queue(target_node_id, coord_of_node_start, coord_of_node_end, cur_time + data.distance, ranges_num, node_queues_ptr, added);
             }
             else
             {
-                FixedPointCoordinate coord_of_target;        // здесь должна оказаться координата для target, чтобы правильно ее добавить вместе с самим target_node_id в add_to_queue(...)
+                FixedPointCoordinate out_coord_of_target_start;        // здесь должна оказаться координата для target, чтобы правильно ее добавить вместе с самим target_node_id в add_to_queue(...)
+				FixedPointCoordinate out_coord_of_target_end;
                 ProcessShortcut(nodeId,
-                    coord_of_nodeId,
-                    data.id, target_node_id,
-                    coord_of_target,
-                    nodes,
-                    cur_time,
-                    max_time,
-                    added,
-                    ranges_num,
-                    node_queues_ptr,
-                    coordinates);
+								coord_data.m_coords_start,
+								coord_data.m_coords_end,
+								data.id, 
+								target_node_id,
+								out_coord_of_target_start,
+								out_coord_of_target_end,
+								nodes,
+								cur_time,
+								max_time,
+								added,
+								ranges_num,
+								node_queues_ptr,
+								coordinates);
 
                 ////////// т.к. мы в ProcessShortcut добавляем точки в очередь, то вот это добавление возможно и не нужно(тем более что не ясно как получать coord_of_target)
                 // между nodeId и шоткатом тоже указывается расстояние, которое потом складывается из внутренних растояний
                 if (cur_time + data.distance < max_time)
-                    add_to_queue(target_node_id, coord_of_target, cur_time + data.distance, ranges_num, node_queues_ptr, added);
+					add_to_queue(target_node_id, out_coord_of_target_start, out_coord_of_target_end, cur_time + data.distance, ranges_num, node_queues_ptr, added);
             }
         }
     }
 
     
     void add_to_queue(NodeID nodeId,
-        const FixedPointCoordinate& coord_of_nodeId,
-        int cur_time,
-        int ranges_num,
-        std::queue<struct _QueueNodeData>* node_queues_ptr,
-        boost::unordered_map<NodeID, int>& added)
+					const FixedPointCoordinate& start, 
+					const FixedPointCoordinate& end,
+					int cur_time,
+					int ranges_num,
+					std::queue<struct _QueueNodeData>* node_queues_ptr,
+					boost::unordered_map<NodeID, int>& added)
     {
 #ifdef _DEBUG
         if (nodeId == 4294967295) {
@@ -403,40 +424,36 @@ private:
                 return;
         }
 
-        int range = get_range_by_cur_time(ranges_num, cur_time);
+		int range = get_range_by_cur_time(ranges_num, cur_time);
 
-        struct _QueueNodeData qd(nodeId, coord_of_nodeId, cur_time);
+		struct _QueueNodeData qd(nodeId, start, end, cur_time);
         node_queues_ptr[range].push(qd);
         
     }
 
-    int get_range_by_cur_time(int ranges_num, int cur_time)
-    {
-        int rang = cur_time >> RANGE_LIMIT_SHIFT;
-        if (rang >= ranges_num)
-            rang = ranges_num - 1;
-        return rang;
-    }
-
-    void ProcessShortcut(NodeID start,
-        const FixedPointCoordinate& coord_of_start,
-        NodeID shortcut, NodeID end,
-        FixedPointCoordinate& out_coord_of_end,       // <<< out
-        boost::unordered_map<NodeID, struct _AddedData>& nodes,
-        int cur_time,
-        int max_time,
-        boost::unordered_map<NodeID, int>& added,
-        int ranges_num,
-        std::queue<struct _QueueNodeData>* node_queues_ptr,
-        std::set<FixedPointCoordinate>& coordinates)
+    void ProcessShortcut(NodeID start_node_id,
+						const FixedPointCoordinate& coord_of_start_node_start,
+						const FixedPointCoordinate& coord_of_start_node_end,
+						NodeID shortcut_node_id,
+						NodeID end_node_id,
+						FixedPointCoordinate& out_coord_of_end_start,       // <<< out
+						FixedPointCoordinate& out_coord_of_end_end,       // <<< out
+						boost::unordered_map<NodeID, struct _AddedData>& nodes,
+						int cur_time,
+						int max_time,
+						boost::unordered_map<NodeID, int>& added,
+						int ranges_num,
+						std::queue<struct _QueueNodeData>* node_queues_ptr,
+						std::set<FixedPointCoordinate>& coordinates)
     {
         //    std::cout << "------" << std::endl;
-        //    std::cout << "PROCESS shortcut: startId=" << start << " (" << coord_of_start.lat << "," << coord_of_start.lon << ")" << "   middleId=" << shortcut << "  endId=" << end << std::endl;
+        //    std::cout << "PROCESS shortcut: startId=" << start_node_id << " (" << coord_of_start_node_start.lat << "," << coord_of_start_node_start.lon << ")" << "   middleId=" << shortcut_node_id << "  endId=" << end_node_id << std::endl;
 
-        FixedPointCoordinate coords_of_shortcut;     // координаты для центральной точки ищем в первом if, используем во втором
+        FixedPointCoordinate coords_of_shortcut_start;     // координаты для центральной точки ищем в первом if, используем во втором
+		FixedPointCoordinate coords_of_shortcut_end;
 
-        //    std::cout << " search smallest edge between start and middle" << std::endl;
-        unsigned eid2 = facade->FindEdgeInEitherDirection(start, shortcut);
+        //    std::cout << " search smallest edge between start_node_id and middle" << std::endl;
+		unsigned eid2 = facade->FindEdgeInEitherDirection(start_node_id, shortcut_node_id);
         if (eid2 != UINT_MAX)
         {
             const QueryEdge::EdgeData & data2 = facade->GetEdgeData(eid2);
@@ -457,11 +474,13 @@ private:
                         struct _AddedData add_data(cur_time + data2.distance, coord_of_node_start, coord_of_node_end);
                         nodes[data2.id] = add_data;
 
-                        if (!compressed_flag) {
-                            if (m_start_phantom_is_reverse)
-                                m_start_phantom_is_reverse = false;
-                            else
-                                check_distance(coord_of_start, coord_of_node_start, coordinates);
+//                        if (!compressed_flag) 
+						{
+							if (m_start_phantom_is_reverse)
+								m_start_phantom_is_reverse = false;
+							else
+								check_distance(_AddedData(0, coord_of_start_node_start, coord_of_start_node_end), add_data, coordinates);
+//                                check_distance(coord_of_start_node_start, coord_of_node_start, coordinates);
                         }
                     }
                     else {
@@ -474,23 +493,27 @@ private:
                     coord_of_node_end = mit->second.m_coords_end;
                 }
 
-                coords_of_shortcut = coord_of_node_end;
+				coords_of_shortcut_start = coord_of_node_start;
+				coords_of_shortcut_end = coord_of_node_end;
 
                 if (cur_time + data2.distance < max_time)
-                    add_to_queue(target2, coord_of_node_end, cur_time + data2.distance, ranges_num, node_queues_ptr, added);
+					add_to_queue(target2, coord_of_node_start, coord_of_node_end, cur_time + data2.distance, ranges_num, node_queues_ptr, added);
             }
             else {
-                ProcessShortcut(start,
-                    coord_of_start,
-                    data2.id, shortcut,
-                    coords_of_shortcut,
-                    nodes,
-                    cur_time,
-                    max_time,
-                    added,
-                    ranges_num,
-                    node_queues_ptr,
-                    coordinates);
+				ProcessShortcut(start_node_id,
+								coord_of_start_node_start,
+								coord_of_start_node_end,
+								data2.id, 
+								shortcut_node_id,
+								coords_of_shortcut_start,		// out 
+								coords_of_shortcut_end,		// out
+								nodes,
+								cur_time,
+								max_time,
+								added,
+								ranges_num,
+								node_queues_ptr,
+								coordinates);
             }
 
             // если здесь, то путь до шотката прописали, учитываем это расстояние
@@ -502,9 +525,9 @@ private:
             return;
 
         //
-        //    std::cout << " search smallest edge between middle and end" << std::endl;
+        //    std::cout << " search smallest edge between middle and end_node_id" << std::endl;
 
-        eid2 = facade->FindEdgeInEitherDirection(shortcut, end);
+		eid2 = facade->FindEdgeInEitherDirection(shortcut_node_id, end_node_id);
         if (eid2 != UINT_MAX)
         {
             const QueryEdge::EdgeData & data2 = facade->GetEdgeData(eid2);
@@ -525,11 +548,13 @@ private:
                         struct _AddedData add_data(cur_time + data2.distance, coord_of_node_start, coord_of_node_end);
                         nodes[data2.id] = add_data;
 
-                        if (!compressed_flag) {
+//                        if (!compressed_flag) 
+						{
                             if (m_start_phantom_is_reverse)
                                 m_start_phantom_is_reverse = false;
                             else
-                                check_distance(coords_of_shortcut, coord_of_node_start, coordinates);
+								check_distance(_AddedData(0, coords_of_shortcut_start, coords_of_shortcut_end), add_data, coordinates);
+//                                check_distance(coords_of_shortcut, coord_of_node_start, coordinates);
                         }
                     }
                     else {
@@ -541,23 +566,27 @@ private:
                     coord_of_node_end = mit->second.m_coords_end;
                 }
 
-                out_coord_of_end = coord_of_node_end;        // !!! вроде бы это координаты конца(то что пришло в качестве параметра end), но не уверен
+				out_coord_of_end_start = coord_of_node_start;
+                out_coord_of_end_end = coord_of_node_end;
 
                 if (cur_time + data2.distance < max_time)
-                    add_to_queue(target2, coord_of_node_end, cur_time + data2.distance, ranges_num, node_queues_ptr, added);
+					add_to_queue(target2, coord_of_node_start, coord_of_node_end, cur_time + data2.distance, ranges_num, node_queues_ptr, added);
             }
             else {
-                ProcessShortcut(shortcut,
-                    coords_of_shortcut,
-                    data2.id, end,
-                    out_coord_of_end,
-                    nodes,
-                    cur_time,
-                    max_time,
-                    added,
-                    ranges_num,
-                    node_queues_ptr,
-                    coordinates);
+				ProcessShortcut(shortcut_node_id,
+								coords_of_shortcut_start,
+								coords_of_shortcut_end,
+								data2.id, 
+								end_node_id,
+								out_coord_of_end_start,
+								out_coord_of_end_end,
+								nodes,
+								cur_time,
+								max_time,
+								added,
+								ranges_num,
+								node_queues_ptr,
+								coordinates);
             }
 
             // если здесь, то путь до шотката прописали, учитываем это расстояние
@@ -565,6 +594,38 @@ private:
         }
     }
 
+	///////////////////////////////////////////////////////////////////////////////////////////
+	//// Search nearest points and call check_distance for them
+	void check_distance(const _AddedData& data1, const _AddedData& data2, std::set<FixedPointCoordinate>& coordinates)
+	{
+		double ranges[4];
+		ranges[0] = FixedPointCoordinate::ApproximateEuclideanDistance(data1.m_coords_start, data2.m_coords_start);
+		ranges[1] = FixedPointCoordinate::ApproximateEuclideanDistance(data1.m_coords_start, data2.m_coords_end);
+		ranges[2] = FixedPointCoordinate::ApproximateEuclideanDistance(data1.m_coords_end, data2.m_coords_start);
+		ranges[3] = FixedPointCoordinate::ApproximateEuclideanDistance(data1.m_coords_end, data2.m_coords_end);
+
+		double* min_pos = std::min_element(&ranges[0], &ranges[4]);
+		int min_index = min_pos - &ranges[0];
+
+		switch (min_index)
+		{
+			case 0:
+				check_distance(data1.m_coords_start, data2.m_coords_start, coordinates);
+				break;
+			case 1:
+				check_distance(data1.m_coords_start, data2.m_coords_end, coordinates);
+				break;
+			case 2:
+				check_distance(data1.m_coords_end, data2.m_coords_start, coordinates);
+				break;
+			case 3:
+				check_distance(data1.m_coords_end, data2.m_coords_end, coordinates);
+				break;
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+	//// fill range from c1 coordinate to c2 coordinate with points
     void check_distance(const FixedPointCoordinate& c1, const FixedPointCoordinate& c2, std::set<FixedPointCoordinate>& coordinates)
     {
         if (c1.lat == INT_MIN)      // что то пошло не так и точку не нашли
@@ -591,6 +652,14 @@ private:
             }
         }
     }
+
+	int get_range_by_cur_time(int ranges_num, int cur_time)
+	{
+		int rang = cur_time >> RANGE_LIMIT_SHIFT;
+		if (rang >= ranges_num)
+			rang = ranges_num - 1;
+		return rang;
+	}
 
 
 private:
