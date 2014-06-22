@@ -257,7 +257,7 @@ public:
         unsigned counter = 0;
 
 		std::vector<FixedPointCoordinate> hull;
-		concaveHull(coordinates, hull);
+		concaveHull(session_info.m_coordinates, hull);
 
 		SimpleLogger().Write(logINFO) << "Hull points: " << hull.size();
 
@@ -273,7 +273,7 @@ public:
         json_result.values["points"] = json_locations;
 
 		JSON::Array json_locations1;
-		for (auto c : coordinates){
+		for (auto c : session_info.m_coordinates){
 			JSON::Array json_coordinates;
 
 			json_coordinates.values.push_back(c.lat / COORDINATE_PRECISION);
