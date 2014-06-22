@@ -349,6 +349,9 @@ private:
                     coord_of_node_end = mit->second.m_coords_end;
 
                     // вроде и тут нужен check_distance(баг про разрывы)
+					check_distance(coord_data, 
+								_AddedData(0, coord_of_node_start, coord_of_node_end), 
+								session_info.m_coordinates);
                 }
 
                 //
@@ -457,6 +460,11 @@ private:
                 else {
                     coord_of_node_start = mit->second.m_coords_start;
                     coord_of_node_end = mit->second.m_coords_end;
+
+					// хз надо ли?
+					check_distance(_AddedData(0, coord_of_start_node_start, coord_of_start_node_end),
+								_AddedData(0, coord_of_node_start, coord_of_node_end),
+								session_info.m_coordinates);
                 }
 
 				coords_of_shortcut_start = coord_of_node_start;
@@ -522,6 +530,11 @@ private:
                 else {
                     coord_of_node_start = mit->second.m_coords_start;
                     coord_of_node_end = mit->second.m_coords_end;
+
+					// хз надо ли?
+					check_distance(_AddedData(0, coords_of_shortcut_start, coords_of_shortcut_end),
+								_AddedData(0, coord_of_node_start, coord_of_node_end),
+								session_info.m_coordinates);
                 }
 
 				out_coord_of_end_start = coord_of_node_start;
