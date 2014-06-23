@@ -268,7 +268,7 @@ public:
 			elapsed = double(end1 - begin) / CLOCKS_PER_SEC;
 			double elapsed1 = double(end1 - end) / CLOCKS_PER_SEC;
 
-			SimpleLogger().Write(logINFO) << "Hull : " << hull.size() << " points in " << elapsed1 << "s. Total "<< elapsed << " s.";
+			SimpleLogger().Write(logINFO) << "Hull : " << hull.size() << " points in " << elapsed1 << " s. Total "<< elapsed << " s.";
 
 			for (int i = 0; i < hull.size(); i++)
 			{
