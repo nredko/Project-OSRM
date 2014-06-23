@@ -168,18 +168,19 @@ void concaveHull(const std::set<FixedPointCoordinate>& coordinates, std::vector<
 				<< " intersect:" << intersect(hull, points[i]);
 #endif
 			if (i != curr && FixedPointCoordinate::ApproximateEuclideanDistance(points[i], points[curr]) < 1.2 * MAX_POINTS_DIST && !intersect(hull, points[i])){
-				/*float angle = getAngle(*prev, points[curr], points[i]);
+				float angle = getAngle(*prev, points[curr], points[i]);
 				if (angle > max_angle) {
 					max_angle = angle;
 					next = i;
-				}*/
+				}
+				/*
 				int rot = getRot(*prev, points[curr], points[i]);
 				if (rot == 0)
 					rot = std::numeric_limits<int>::max() - 1;
 				if (rot < min_rot) {
 					min_rot = rot;
 					next = i;
-				}
+				}*/
 			}
 		}
 		BOOST_ASSERT(next >= 0);

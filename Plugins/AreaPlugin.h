@@ -257,31 +257,31 @@ public:
         unsigned counter = 0;
 
 		std::vector<FixedPointCoordinate> hull;
-		concaveHull(session_info.m_coordinates, hull);
+		if (route_parameters.zoom_level != 1) {
+			concaveHull(session_info.m_coordinates, hull);
+			SimpleLogger().Write(logINFO) << "Hull points: " << hull.size();
 
-		SimpleLogger().Write(logINFO) << "Hull points: " << hull.size();
+			for (int i = 0; i < hull.size(); i++)
+			{
+				JSON::Array json_coordinates;
 
-		for (int i = 0; i < hull.size(); i++)
-        {
-            JSON::Array json_coordinates;
-
-			json_coordinates.values.push_back(hull[i].lat / COORDINATE_PRECISION);
-			json_coordinates.values.push_back(hull[i].lon / COORDINATE_PRECISION);
-            json_locations.values.push_back(json_coordinates);
-            ++counter;
-        }
-        json_result.values["points"] = json_locations;
-
-		JSON::Array json_locations1;
-		for (auto c : session_info.m_coordinates){
-			JSON::Array json_coordinates;
-
-			json_coordinates.values.push_back(c.lat / COORDINATE_PRECISION);
-			json_coordinates.values.push_back(c.lon / COORDINATE_PRECISION);
-			json_locations.values.push_back(json_coordinates);
-			++counter;
+				json_coordinates.values.push_back(hull[i].lat / COORDINATE_PRECISION);
+				json_coordinates.values.push_back(hull[i].lon / COORDINATE_PRECISION);
+				json_locations.values.push_back(json_coordinates);
+				++counter;
+			}
 		}
-		json_result.values["debug_points"] = json_locations;
+		else {
+
+			for (auto c : session_info.m_coordinates){
+				JSON::Array json_coordinates;
+				json_coordinates.values.push_back(c.lat / COORDINATE_PRECISION);
+				json_coordinates.values.push_back(c.lon / COORDINATE_PRECISION);
+				json_locations.values.push_back(json_coordinates);
+				++counter;
+			}
+		}
+		json_result.values["points"] = json_locations;
 
         JSON::render(reply.content, json_result);
         
