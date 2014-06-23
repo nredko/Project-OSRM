@@ -65,11 +65,6 @@ int ccw(const FixedPointCoordinate& p0, const FixedPointCoordinate& p1, const Fi
 	return 0;
 }
 
-int getRot(const FixedPointCoordinate& p0, const FixedPointCoordinate& p1, const FixedPointCoordinate& p2){
-	return (p1.lon - p0.lon)*(p2.lat - p1.lat) - (p1.lat - p0.lat)*(p2.lon - p1.lon);
-}
-
-
 bool intersect(const FixedPointCoordinate& p1, const FixedPointCoordinate& p2, const FixedPointCoordinate& q1, const FixedPointCoordinate& q2) {
 	if ((p1.lon == q1.lon && p1.lat == q1.lat || p2.lon == q2.lon && p2.lat == q2.lat) ||
 		(p1.lon == q2.lon && p1.lat == q2.lat || p2.lon == q1.lon && p2.lat == q1.lat))
@@ -98,6 +93,7 @@ void calculateHull(const std::vector<FixedPointCoordinate>& points, std::vector<
 	hull.clear();
 	//hull = points;
 	//return;
+	std::vector<int> counts(points.size(), 0);
 
 	int start = 0;
 	for (int i = 0; i < points.size(); i++) {
@@ -137,14 +133,6 @@ void calculateHull(const std::vector<FixedPointCoordinate>& points, std::vector<
 					max_angle = angle;
 					next = i;
 				}
-				/*
-				int rot = getRot(*prev, points[curr], points[i]);
-				if (rot == 0)
-					rot = std::numeric_limits<int>::max() - 1;
-				if (rot < min_rot) {
-					min_rot = rot;
-					next = i;
-				}*/
 			}
 		}
 		//BOOST_ASSERT(next >= 0);
@@ -154,6 +142,12 @@ void calculateHull(const std::vector<FixedPointCoordinate>& points, std::vector<
 			return;
 		}
 		hull.push_back(points[next]);
+		if (++counts[next] > 4){
+			SimpleLogger().Write(logWARNING) << "Something goes wrong in hull calculations.";
+			hull.push_back(points[start]);
+			return;
+		}
+
 #ifdef DEBUG
 		SimpleLogger().Write(logDEBUG) << curr << " -> " << next;
 #endif
@@ -176,10 +170,14 @@ void concaveHull(const std::set<FixedPointCoordinate>& coordinates, std::vector<
 
 	std::vector<FixedPointCoordinate> points(coordinates.begin(), coordinates.end());
 	calculateHull(points, hull, maxLat*1.2, maxLon*1.2);
+	SimpleLogger().Write(logINFO) << "First hull: " << hull.size() << " points. Expanding...";
+
+
 	int dLat = maxLat / 1.4142135623730950488016887242097;
 	int dLon = maxLon / 1.4142135623730950488016887242097;
-
-	std::vector<FixedPointCoordinate> expanded;// ((hull.size() - 1) * 8);
+	
+	std::vector<FixedPointCoordinate> expanded;
+	expanded.reserve((hull.size() - 1) * 8);
 	for (int i = 0; i < hull.size() - 1; i++) {
 		FixedPointCoordinate p0(hull[i].lat + maxLat, hull[i].lon);
 		expanded.push_back(p0);
