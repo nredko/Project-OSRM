@@ -151,7 +151,7 @@ void concaveHull(const std::set<FixedPointCoordinate>& coordinates, std::vector<
 	int next = -1;
 	FixedPointCoordinate init(points[start].lat - 10, points[start].lon);
 	FixedPointCoordinate *prev = &init;
-#ifdef DEBUG
+#ifdef MYDEBUG
 	SimpleLogger().Write(logDEBUG) << "Init: " << init;
 	SimpleLogger().Write(logDEBUG) << "Start: " << start << ": " << points[start];
 #endif
@@ -160,7 +160,7 @@ void concaveHull(const std::set<FixedPointCoordinate>& coordinates, std::vector<
 		float max_angle = -10000.f;
 		int min_rot = std::numeric_limits<int>::max();
 		for (int i = 0; i < points.size(); i++) {
-#ifdef DEBUG			
+#ifdef MYDEBUG			
 			SimpleLogger().Write(logDEBUG) << i << ": " << points[i] << " dist: " << FixedPointCoordinate::ApproximateEuclideanDistance(points[i], points[curr]) 
 				<< " [" << (FixedPointCoordinate::ApproximateEuclideanDistance(points[i], points[curr]) < 1.2 * MAX_POINTS_DIST ? "v" : " ") << "]" 
 				<< " angle: " << getAngle(*prev, points[curr], points[i]) 

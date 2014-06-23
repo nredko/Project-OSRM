@@ -139,6 +139,7 @@ public:
             SimpleLogger().Write(logINFO) << "bad request";
             return;
         }
+		clock_t begin = clock();
 
         unsigned short route_time_limit = route_parameters.time * 10;
 
@@ -186,6 +187,8 @@ public:
 							first_node_end = to_g_coord;
 					}
 				}
+			} else {
+				session_info.m_coordinates.insert(startPhantomNode.location);
 			}
 
             add_to_queue(nodeId,
@@ -242,8 +245,10 @@ public:
         //
 		delete[] session_info.m_node_queues_ptr; session_info.m_node_queues_ptr = 0;
         
-        
-		SimpleLogger().Write(logINFO) << "Num points: " << session_info.m_coordinates.size();
+		clock_t end = clock();
+		double elapsed = double(end - begin) / CLOCKS_PER_SEC;
+
+		SimpleLogger().Write(logINFO) << "Found " << session_info.m_coordinates.size() << " points in " << elapsed << " s.";
 
         
         ///// Reply to request
@@ -259,7 +264,11 @@ public:
 		std::vector<FixedPointCoordinate> hull;
 		if (route_parameters.zoom_level != 1) {
 			concaveHull(session_info.m_coordinates, hull);
-			SimpleLogger().Write(logINFO) << "Hull points: " << hull.size();
+			clock_t end1 = clock();
+			elapsed = double(end1 - begin) / CLOCKS_PER_SEC;
+			double elapsed1 = double(end1 - end) / CLOCKS_PER_SEC;
+
+			SimpleLogger().Write(logINFO) << "Hull : " << hull.size() << " points in " << elapsed1 << "s. Total "<< elapsed << " s.";
 
 			for (int i = 0; i < hull.size(); i++)
 			{
