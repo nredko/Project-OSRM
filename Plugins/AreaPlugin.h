@@ -187,7 +187,8 @@ public:
 							first_node_end = to_g_coord;
 					}
 				}
-			} else {
+			}
+			else {
 				session_info.m_coordinates.insert(startPhantomNode.location);
 			}
 

@@ -74,10 +74,10 @@ bool intersect(const FixedPointCoordinate& p1, const FixedPointCoordinate& p2, c
 }
 
 
-bool intersect(std::vector<FixedPointCoordinate>& hull, const FixedPointCoordinate& next) {
-	int l = hull.size() - 1;
-	for (int i = 1; i < l; i++){
-		if (intersect(hull[i - 1], hull[i], hull[l], next))
+bool intersect(const std::vector<FixedPointCoordinate>& hull, const FixedPointCoordinate& next) {
+	int last = hull.size() - 1;
+	for (int i = 1; i < last; i++){
+		if (intersect(hull[i - 1], hull[i], hull[last], next))
 			return true;
 	}
 	return false;
@@ -91,16 +91,21 @@ inline bool isNear(const FixedPointCoordinate& a, const FixedPointCoordinate& b,
 void calculateHull(const std::vector<FixedPointCoordinate>& points, std::vector<FixedPointCoordinate>& hull, int maxLat, int maxLon) {
 	
 	hull.clear();
+
+	if (points.empty())
+		return;
+
 	//hull = points;
 	//return;
 	std::vector<int> counts(points.size(), 0);
 
 	int start = 0;
-	for (int i = 0; i < points.size(); i++) {
+	for (int i = 1; i < points.size(); i++) {
 		if (points[i].lat < points[start].lat)
 			start = i;
 	}
 	hull.push_back(points[start]);
+
 	int curr = start;
 	int next = -1;
 	const FixedPointCoordinate init(points[start].lat - 10, points[start].lon);
@@ -160,6 +165,9 @@ void calculateHull(const std::vector<FixedPointCoordinate>& points, std::vector<
 
 void concaveHull(const std::set<FixedPointCoordinate>& coordinates, std::vector<FixedPointCoordinate>& hull) {
 	
+	if (coordinates.empty())
+		return;
+
 	FixedPointCoordinate start = *coordinates.begin();
 	
 	// calculate scale by lat and scale by lon for current geographic area
