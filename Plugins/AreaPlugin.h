@@ -231,7 +231,7 @@ public:
         // TODO: тут надо пробежаться и те точки которые уже в points засунуьт в set чтобы они повторно не залезли
         
         //
-		for (boost::unordered_map<NodeID, struct _AddedData>::iterator it = session_info.m_nodes.begin(); it != session_info.m_nodes.end(); it++) {
+		for (typename boost::unordered_map<NodeID, struct _AddedData>::iterator it = session_info.m_nodes.begin(); it != session_info.m_nodes.end(); it++) {
             const FixedPointCoordinate& coord_start = (*it).second.m_coords_start;
 			if (session_info.m_coordinates.find(coord_start) == session_info.m_coordinates.end())
 				session_info.m_coordinates.insert(coord_start);
@@ -339,7 +339,7 @@ private:
                 //// Насколько я понимаю это координаты для target_node_id, который пойдет в add_to_queue, т.к. по самому target_node_id не найти координаты - передаем в add_to_queue(...)
                 FixedPointCoordinate coord_of_node_start;
                 FixedPointCoordinate coord_of_node_end;
-				boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(to);
+				typename boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(to);
 				if (session_info.m_nodes.end() == mit)
                 {
 					if (GetCoordsForEdgeID(to, coord_of_node_start, coord_of_node_end, session_info.m_coordinates))
@@ -450,7 +450,7 @@ private:
                 //// Насколько я понимаю это координаты для target2, который пойдет в add_to_queue, т.к. по самому target2 не найти координаты - передаем в add_to_queue(...)
                 FixedPointCoordinate coord_of_node_start;
                 FixedPointCoordinate coord_of_node_end;
-                boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(data2.id);
+                typename boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(data2.id);
 				if (session_info.m_nodes.end() == mit)
                 {
 					if (GetCoordsForEdgeID(data2.id, coord_of_node_start, coord_of_node_end, session_info.m_coordinates))
@@ -521,7 +521,7 @@ private:
                 //// Насколько я понимаю это координаты для target2, который пойдет в add_to_queue, т.к. по самому target2 не найти координаты - передаем в add_to_queue(...)
                 FixedPointCoordinate coord_of_node_start;
                 FixedPointCoordinate coord_of_node_end;
-				boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(data2.id);
+				typename boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(data2.id);
 				if (session_info.m_nodes.end() == mit)
                 {
 					if (GetCoordsForEdgeID(data2.id, coord_of_node_start, coord_of_node_end, session_info.m_coordinates))
