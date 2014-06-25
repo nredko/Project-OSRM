@@ -11,6 +11,7 @@
 #include <vector>
 #include <limits>
 #include <valarray>
+#include <boost/foreach.hpp>
 
 float getAngle(const FixedPointCoordinate& prev, const FixedPointCoordinate& curr, const FixedPointCoordinate& next) {
 	int prev_x = prev.lon , prev_y = prev.lat;
@@ -177,9 +178,9 @@ void concaveHull(const std::set<FixedPointCoordinate>& coordinates, std::vector<
 
 	points.reserve(coordinates.size() + 1);
 	int min_point = 0, i = 0;
-	for (std::set<FixedPointCoordinate>::iterator it = coordinates.begin(); it != coordinates.end(); it++)
+	BOOST_FOREACH(FixedPointCoordinate coord, coordinates)
 	{
-		points.push_back(*it);
+		points.push_back(coord);
 		if (points[i++].lat < points[min_point].lat)
 			min_point = i;
 	}
