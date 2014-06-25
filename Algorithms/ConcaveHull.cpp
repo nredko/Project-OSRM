@@ -13,7 +13,7 @@
 #include <valarray>
 #include <boost/foreach.hpp>
 
-float getAngle(const FixedPointCoordinate& prev, const FixedPointCoordinate& curr, const FixedPointCoordinate& next) {
+float getAngle(const FixedPointCoordinate& prev, const FixedPointCoordinate& curr, const FixedPointCoordinate& next, float *outAngle) {
 	int prev_x = prev.lon , prev_y = prev.lat;
 	int curr_x = curr.lon , curr_y = curr.lat;
 	int next_x = next.lon , next_y = next.lat;
@@ -46,7 +46,8 @@ float getAngle(const FixedPointCoordinate& prev, const FixedPointCoordinate& cur
 	}
 	if (angle == 360.f)
 		angle = 0;
-	return 180.f - angle;
+	*outAngle = 180.f - angle;
+	return *outAngle;
 }
 
 
@@ -130,12 +131,13 @@ void calculateHull(const std::vector<FixedPointCoordinate>& points, std::vector<
 				//<< " rot: " << getRot(*prev, points[curr], points[i])
 				<< " intersect:" << intersect(hull, points[i]);
 #endif
-			if (i != curr && isNear(points[i], points[curr], maxLat, maxLon) /*&& FixedPointCoordinate::ApproximateEuclideanDistance(points[i], points[curr]) < 1.2 * MAX_POINTS_DIST */ && !intersect(hull, points[i])){
-				float angle = getAngle(*prev, points[curr], points[i]);
-				if (angle > max_angle) {
-					max_angle = angle;
-					next = i;
-				}
+			float angle = -10000.f;
+			if (i != curr && isNear(points[i], points[curr], maxLat, maxLon)
+				&& getAngle(*prev, points[curr], points[i], &angle) > max_angle
+				&& !intersect(hull, points[i])) 
+			{
+				max_angle = angle;
+				next = i;
 			}
 		}
 		//BOOST_ASSERT(next >= 0);
