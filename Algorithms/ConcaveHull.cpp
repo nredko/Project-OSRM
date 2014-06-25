@@ -177,9 +177,9 @@ void concaveHull(const std::set<FixedPointCoordinate>& coordinates, std::vector<
 
 	points.reserve(coordinates.size() + 1);
 	int min_point = 0, i = 0;
-	for each (auto	var in coordinates)
+	for (std::set<FixedPointCoordinate>::iterator it = coordinates.begin(); it != coordinates.end(); it++)
 	{
-		points.push_back(var);
+		points.push_back(*it);
 		if (points[i++].lat < points[min_point].lat)
 			min_point = i;
 	}
