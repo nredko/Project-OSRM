@@ -12,9 +12,6 @@
 #include <limits>
 #include <valarray>
 
-// area?jsonp=show&time=10&loc=54.83663,83.09185
-
-/// a->b->c angle (0-360°)
 float getAngle(const FixedPointCoordinate& prev, const FixedPointCoordinate& curr, const FixedPointCoordinate& next) {
 	int prev_x = prev.lon , prev_y = prev.lat;
 	int curr_x = curr.lon , curr_y = curr.lat;
@@ -112,7 +109,7 @@ void calculateHull(const std::vector<FixedPointCoordinate>& points, std::vector<
 	const FixedPointCoordinate *prev = &init;
 	
 
-#ifdef DEBUG
+#ifdef MyDEBUG
 	SimpleLogger().Write(logDEBUG) << "Init: " << init;
 	SimpleLogger().Write(logDEBUG) << "Start: " << start << ": " << points[start];
 #endif
@@ -153,7 +150,7 @@ void calculateHull(const std::vector<FixedPointCoordinate>& points, std::vector<
 			return;
 		}
 
-#ifdef DEBUG
+#ifdef MyDEBUG
 		SimpleLogger().Write(logDEBUG) << curr << " -> " << next;
 #endif
 		prev = &points[curr];
@@ -168,7 +165,7 @@ void concaveHull(const std::set<FixedPointCoordinate>& coordinates, std::vector<
 	if (coordinates.empty())
 		return;
 
-	FixedPointCoordinate start = *coordinates.begin();
+	const FixedPointCoordinate& start = *coordinates.begin();
 	
 	// calculate scale by lat and scale by lon for current geographic area
 	FixedPointCoordinate south(start.lat - 100, start.lon);
@@ -176,8 +173,24 @@ void concaveHull(const std::set<FixedPointCoordinate>& coordinates, std::vector<
 	int maxLat = 100 * MAX_POINTS_DIST / FixedPointCoordinate::ApproximateDistance(south, start);
 	int maxLon = 100 * MAX_POINTS_DIST / FixedPointCoordinate::ApproximateDistance(east, start);
 
-	std::vector<FixedPointCoordinate> points(coordinates.begin(), coordinates.end());
+	std::vector<FixedPointCoordinate> points;
+
+	points.reserve(coordinates.size() + 1);
+	int min_point = 0, i = 0;
+	for each (auto	var in coordinates)
+	{
+		points.push_back(var);
+		if (points[i++].lat < points[min_point].lat)
+			min_point = i;
+	}
+	south.lat = points[min_point].lat - maxLat;
+	south.lon = points[min_point].lon;
+	points.push_back(south);
+
 	calculateHull(points, hull, maxLat*1.2, maxLon*1.2);
+	hull[0] = hull[1];
+	if (hull.size() > 1)
+		hull[hull.size() - 1] = hull[hull.size() - 2];
 	SimpleLogger().Write(logINFO) << "First hull: " << hull.size() << " points. Expanding...";
 
 
