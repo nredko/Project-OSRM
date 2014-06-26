@@ -157,9 +157,9 @@ public:
 											startPhantomNode,
                                             route_parameters.zoom_level);
         
-		NodeID nodeId = startPhantomNode.forward_node_id;
-        if (UINT_MAX == nodeId)
-			nodeId = startPhantomNode.reverse_node_id;
+//		NodeID nodeId = startPhantomNode.forward_node_id;
+//        if (UINT_MAX == nodeId)
+//			nodeId = startPhantomNode.reverse_node_id;
 
 		/////////
 		//// мы разбиваем время на куски по RANGE_LIMIT и не переходим к следующей очереди пока в предыдущих есть чего
@@ -167,7 +167,7 @@ public:
 		session_info.m_node_queues_ptr = new std::queue<struct _QueueNodeData>[session_info.m_ranges_num];
         
         //
-        if (UINT_MAX != nodeId)
+		if (UINT_MAX != startPhantomNode.forward_node_id || UINT_MAX != startPhantomNode.reverse_node_id)
         {
 			FixedPointCoordinate first_node_start = startPhantomNode.location;
 			FixedPointCoordinate first_node_end = startPhantomNode.location;
@@ -192,9 +192,17 @@ public:
 				session_info.m_coordinates.insert(startPhantomNode.location);
 			}
 
-            add_to_queue(nodeId,
-						first_node_start, first_node_end, 0,
-						session_info);
+			//
+			if (UINT_MAX != startPhantomNode.forward_node_id) {
+				add_to_queue(startPhantomNode.forward_node_id,
+							first_node_start, first_node_end, 0,
+							session_info);
+			}
+			if (UINT_MAX != startPhantomNode.reverse_node_id) {
+				add_to_queue(startPhantomNode.reverse_node_id,
+							first_node_start, first_node_end, 0,
+							session_info);
+			}
         }
 
 		///////////////////////////////////////////////////////
@@ -573,15 +581,23 @@ private:
         }
     }
 
+	inline double quick_sortdist(const FixedPointCoordinate& c1, const FixedPointCoordinate& c2)
+	{
+		if (abs(c1.lat - c2.lat) > 40000 || abs(c1.lon - c2.lon) > 40000)		// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			return 9999999.0;
+
+		return (c1.lat - c2.lat)*(c1.lat - c2.lat) + (c1.lon - c2.lon)*(c1.lon - c2.lon);
+	}
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 	//// Search nearest points and call check_distance for them
 	void check_distance(const _AddedData& data1, const _AddedData& data2, std::set<FixedPointCoordinate>& coordinates)
 	{
 		double ranges[4];
-		ranges[0] = FixedPointCoordinate::ApproximateEuclideanDistance(data1.m_coords_start, data2.m_coords_start);
-		ranges[1] = FixedPointCoordinate::ApproximateEuclideanDistance(data1.m_coords_start, data2.m_coords_end);
-		ranges[2] = FixedPointCoordinate::ApproximateEuclideanDistance(data1.m_coords_end, data2.m_coords_start);
-		ranges[3] = FixedPointCoordinate::ApproximateEuclideanDistance(data1.m_coords_end, data2.m_coords_end);
+		ranges[0] = quick_sortdist(data1.m_coords_start, data2.m_coords_start);
+		ranges[1] = quick_sortdist(data1.m_coords_start, data2.m_coords_end);
+		ranges[2] = quick_sortdist(data1.m_coords_end, data2.m_coords_start);
+		ranges[3] = quick_sortdist(data1.m_coords_end, data2.m_coords_end);
 
 		double* min_pos = std::min_element(&ranges[0], &ranges[4]);
 		int min_index = min_pos - &ranges[0];
