@@ -347,10 +347,10 @@ private:
                 //// Насколько я понимаю это координаты для target_node_id, который пойдет в add_to_queue, т.к. по самому target_node_id не найти координаты - передаем в add_to_queue(...)
                 FixedPointCoordinate coord_of_node_start;
                 FixedPointCoordinate coord_of_node_end;
-				typename boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(to);
-				if (session_info.m_nodes.end() == mit)
+		typename boost::unordered_map<NodeID, struct _AddedData>::iterator mit = session_info.m_nodes.find(to);
+		if (session_info.m_nodes.end() == mit)
                 {
-					if (GetCoordsForEdgeID(to, coord_of_node_start, coord_of_node_end, session_info.m_coordinates))
+		    if (GetCoordsForEdgeID(to, coord_of_node_start, coord_of_node_end, session_info.m_coordinates))
                     {
                         struct _AddedData add_data(cur_time + data.distance, coord_of_node_start, coord_of_node_end);
 						session_info.m_nodes[to] = add_data;
