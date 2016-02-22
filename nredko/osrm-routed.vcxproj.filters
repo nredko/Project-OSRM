@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Заголовочные файлы">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="OSRM">
+      <UniqueIdentifier>{f896bae1-7e95-4591-8456-4d7fa5c84ed2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\tools\routed.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\server\http\reply.cpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\server\connection.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\server\request_handler.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\server\request_parser.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\douglas_peucker.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\polyline_compressor.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\polyline_formatter.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\route_parameters.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\search_engine_data.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\engine.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osrm\osrm.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\storage\storage.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\assert.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\coordinate.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\coordinate_calculation.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\exception.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\fingerprint.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\hilbert_value.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\simple_logger.cpp">
+      <Filter>OSRM</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\server\api_grammar.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\connection.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\request_handler.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\request_parser.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\server.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\http\compression_type.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\http\header.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\http\reply.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\http\request.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\distance_table.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\hello_world.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\match.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\nearest.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\plugin_base.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\timestamp.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\trip.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\viaroute.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\isochrone.hpp">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
