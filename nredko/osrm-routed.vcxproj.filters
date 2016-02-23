@@ -1,149 +1,534 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Файлы исходного кода">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="contractor">
+      <UniqueIdentifier>{5d9abc73-4375-4cba-9f1c-f4ed7ea722a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Заголовочные файлы">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    <Filter Include="engine">
+      <UniqueIdentifier>{65c916eb-d152-47c4-b702-570a843cea00}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы ресурсов">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="engine\datafacade">
+      <UniqueIdentifier>{bdb4852f-0aec-41f6-8f85-c619a59fcf7c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="OSRM">
-      <UniqueIdentifier>{f896bae1-7e95-4591-8456-4d7fa5c84ed2}</UniqueIdentifier>
+    <Filter Include="engine\guidance">
+      <UniqueIdentifier>{aa4cc81b-20c4-4397-99ef-1665ccf56aff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\map_matching">
+      <UniqueIdentifier>{a42cdb18-4d0e-40ce-9a43-3cfeca19d798}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\plugins">
+      <UniqueIdentifier>{dcef3def-a154-4323-99e8-85af8fcaff2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\routing_algorithms">
+      <UniqueIdentifier>{2dde02e6-d3d8-4ea5-b2c1-474082fda7a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\trip">
+      <UniqueIdentifier>{d12b11f7-efcf-4065-95d0-74aa1d83ad89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="extractor">
+      <UniqueIdentifier>{d52814f5-6d9e-42f5-bb6d-0e39fad71f4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="storage">
+      <UniqueIdentifier>{03b990d1-1ae3-4eed-9e28-a7b6dab5e12d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tools">
+      <UniqueIdentifier>{8264c25c-2142-49cb-a77a-2263a569fcf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="server">
+      <UniqueIdentifier>{eb4ed57f-f7cb-47f9-920f-d1cda85d5599}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{762c5712-35d2-448d-adc3-f87ff0d42ad2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="osrm">
+      <UniqueIdentifier>{17dfdd2b-30fe-4497-97c3-ba06ce50171d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="server\http">
+      <UniqueIdentifier>{189019fb-6c75-47f3-a346-c66bc95e07b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\tools\routed.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\server\http\reply.cpp">
-      <Filter>Заголовочные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\server\connection.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\server\request_handler.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\server\request_parser.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\douglas_peucker.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\polyline_compressor.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\polyline_formatter.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\route_parameters.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\search_engine_data.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\engine\engine.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osrm\osrm.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\storage\storage.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\util\assert.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\util\coordinate.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\util\coordinate_calculation.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\util\exception.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\util\fingerprint.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\util\hilbert_value.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\util\simple_logger.cpp">
-      <Filter>OSRM</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\include\server\api_grammar.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\routing_algorithms\alternative_path.hpp">
+      <Filter>engine\routing_algorithms</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\server\connection.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\routing_algorithms\direct_shortest_path.hpp">
+      <Filter>engine\routing_algorithms</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\server\request_handler.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\routing_algorithms\many_to_many.hpp">
+      <Filter>engine\routing_algorithms</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\server\request_parser.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\routing_algorithms\map_matching.hpp">
+      <Filter>engine\routing_algorithms</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\server\server.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\routing_algorithms\routing_base.hpp">
+      <Filter>engine\routing_algorithms</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\server\http\compression_type.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\routing_algorithms\shortest_path.hpp">
+      <Filter>engine\routing_algorithms</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\server\http\header.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\contractor\contractor_config.hpp">
+      <Filter>contractor</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\server\http\reply.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\contractor\crc32_processor.hpp">
+      <Filter>contractor</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\server\http\request.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\contractor\graph_contractor.hpp">
+      <Filter>contractor</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\distance_table.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\contractor\query_edge.hpp">
+      <Filter>contractor</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\hello_world.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\api_response_generator.hpp">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\match.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\douglas_peucker.hpp">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\nearest.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\engine.hpp">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\plugin_base.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\engine_config.hpp">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\timestamp.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\geospatial_query.hpp">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\trip.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\internal_route_result.hpp">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\viaroute.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\object_encoder.hpp">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\isochrone.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\phantom_node.hpp">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\datafacade\shared_datafacade.hpp">
-      <Filter>Заголовочные файлы</Filter>
+    <ClInclude Include="..\include\engine\polyline_compressor.hpp">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\polyline_formatter.hpp">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\route_name_extraction.hpp">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\route_parameters.hpp">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\search_engine.hpp">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\search_engine_data.hpp">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\segment_information.hpp">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\datafacade\datafacade_base.hpp">
+      <Filter>engine\datafacade</Filter>
     </ClInclude>
     <ClInclude Include="..\include\engine\datafacade\internal_datafacade.hpp">
-      <Filter>Заголовочные файлы</Filter>
+      <Filter>engine\datafacade</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\datafacade\shared_datafacade.hpp">
+      <Filter>engine\datafacade</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\guidance\segment_compression.hpp">
+      <Filter>engine\guidance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\guidance\segment_list.hpp">
+      <Filter>engine\guidance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\guidance\textual_route_annotation.hpp">
+      <Filter>engine\guidance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\map_matching\bayes_classifier.hpp">
+      <Filter>engine\map_matching</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\map_matching\hidden_markov_model.hpp">
+      <Filter>engine\map_matching</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\distance_table.hpp">
+      <Filter>engine\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\hello_world.hpp">
+      <Filter>engine\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\isochrone.hpp">
+      <Filter>engine\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\match.hpp">
+      <Filter>engine\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\nearest.hpp">
+      <Filter>engine\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\plugin_base.hpp">
+      <Filter>engine\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\timestamp.hpp">
+      <Filter>engine\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\trip.hpp">
+      <Filter>engine\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\viaroute.hpp">
+      <Filter>engine\plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\trip\trip_brute_force.hpp">
+      <Filter>engine\trip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\trip\trip_farthest_insertion.hpp">
+      <Filter>engine\trip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\trip\trip_nearest_neighbour.hpp">
+      <Filter>engine\trip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\trip\trip_tabu_search.hpp">
+      <Filter>engine\trip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\storage\shared_barriers.hpp">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\storage\shared_datatype.hpp">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\storage\shared_memory.hpp">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\storage\storage.hpp">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\assert.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\bearing.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\binary_heap.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\cast.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\container.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\coordinate.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\coordinate_calculation.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\deallocating_vector.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\debug_geometry.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\dist_table_wrapper.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\dynamic_graph.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\exception.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\fingerprint.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\for_each_pair.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\graph_loader.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\graph_utils.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\hilbert_value.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\integer_range.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\io.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\iso_8601_duration_parser.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\json_container.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\json_logger.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\json_renderer.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\json_util.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\lua_util.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\make_unique.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\matching_debug_info.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\matrix_graph_wrapper.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\node_based_graph.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\percent.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\range_table.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\rectangle.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\routed_options.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\shared_memory_vector_wrapper.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\simple_logger.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\static_graph.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\static_rtree.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\std_hash.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\string_util.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\strong_typedef.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\timing_util.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\trigonometry_table.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\typedefs.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\xml_renderer.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\xor_fast_hash.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\util\xor_fast_hash_storage.hpp">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\compressed_edge_container.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\edge_based_edge.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\edge_based_graph_factory.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\edge_based_node.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\external_memory_node.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\extraction_containers.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\extraction_helper_functions.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\extraction_node.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\extraction_way.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\first_and_last_segment_of_way.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\graph_compressor.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\internal_extractor_edge.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\node_based_edge.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\original_edge_data.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\query_node.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\raster_source.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\restriction.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\restriction_map.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\tarjan_scc.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\travel_mode.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\extractor\turn_instructions.hpp">
+      <Filter>extractor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\osrm\coordinate.hpp">
+      <Filter>osrm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\osrm\engine_config.hpp">
+      <Filter>osrm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\osrm\json_container.hpp">
+      <Filter>osrm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\osrm\osrm.hpp">
+      <Filter>osrm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\osrm\route_parameters.hpp">
+      <Filter>osrm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\api_grammar.hpp">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\connection.hpp">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\request_handler.hpp">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\request_parser.hpp">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\server.hpp">
+      <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\http\compression_type.hpp">
+      <Filter>server\http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\http\header.hpp">
+      <Filter>server\http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\http\reply.hpp">
+      <Filter>server\http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\server\http\request.hpp">
+      <Filter>server\http</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="index.html">
-      <Filter>Файлы исходного кода</Filter>
+    <None Include="..\include\util\fingerprint_impl.hpp.in">
+      <Filter>util</Filter>
     </None>
+    <None Include="..\include\util\version.hpp.in">
+      <Filter>util</Filter>
+    </None>
+    <None Include="index.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\engine\douglas_peucker.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\engine.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\polyline_compressor.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\polyline_formatter.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\route_parameters.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\engine\search_engine_data.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extractor\compressed_edge_container.cpp">
+      <Filter>extractor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extractor\edge_based_graph_factory.cpp">
+      <Filter>extractor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extractor\extraction_containers.cpp">
+      <Filter>extractor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extractor\graph_compressor.cpp">
+      <Filter>extractor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extractor\raster_source.cpp">
+      <Filter>extractor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\extractor\restriction_map.cpp">
+      <Filter>extractor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osrm\osrm.cpp">
+      <Filter>osrm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\server\connection.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\server\request_handler.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\server\request_parser.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\server\http\reply.cpp">
+      <Filter>server\http</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\storage\storage.cpp">
+      <Filter>storage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tools\routed.cpp">
+      <Filter>tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\assert.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\coordinate.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\coordinate_calculation.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\exception.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\fingerprint.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\hilbert_value.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\util\simple_logger.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
