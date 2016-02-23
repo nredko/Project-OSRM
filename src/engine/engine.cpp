@@ -9,7 +9,7 @@
 #include "engine/plugins/trip.hpp"
 #include "engine/plugins/viaroute.hpp"
 #include "engine/plugins/match.hpp"
-#include "engine/plugins/isochrone.hpp"
+#include "engine/plugins/isochrone_plugin.hpp"
 
 #include "engine/datafacade/datafacade_base.hpp"
 #include "engine/datafacade/internal_datafacade.hpp"

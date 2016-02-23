@@ -53,7 +53,7 @@
     <ClInclude Include="..\include\engine\phantom_node.hpp" />
     <ClInclude Include="..\include\engine\plugins\distance_table.hpp" />
     <ClInclude Include="..\include\engine\plugins\hello_world.hpp" />
-    <ClInclude Include="..\include\engine\plugins\isochrone.hpp" />
+    <ClInclude Include="..\include\engine\plugins\isochrone_plugin.hpp" />
     <ClInclude Include="..\include\engine\plugins\match.hpp" />
     <ClInclude Include="..\include\engine\plugins\nearest.hpp" />
     <ClInclude Include="..\include\engine\plugins\plugin_base.hpp" />
@@ -66,6 +66,7 @@
     <ClInclude Include="..\include\engine\route_parameters.hpp" />
     <ClInclude Include="..\include\engine\routing_algorithms\alternative_path.hpp" />
     <ClInclude Include="..\include\engine\routing_algorithms\direct_shortest_path.hpp" />
+    <ClInclude Include="..\include\engine\routing_algorithms\isochrone.hpp" />
     <ClInclude Include="..\include\engine\routing_algorithms\many_to_many.hpp" />
     <ClInclude Include="..\include\engine\routing_algorithms\map_matching.hpp" />
     <ClInclude Include="..\include\engine\routing_algorithms\routing_base.hpp" />

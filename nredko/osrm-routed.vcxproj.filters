@@ -153,9 +153,6 @@
     <ClInclude Include="..\include\engine\plugins\hello_world.hpp">
       <Filter>engine\plugins</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\engine\plugins\isochrone.hpp">
-      <Filter>engine\plugins</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\engine\plugins\match.hpp">
       <Filter>engine\plugins</Filter>
     </ClInclude>
@@ -428,6 +425,12 @@
     </ClInclude>
     <ClInclude Include="..\include\server\http\request.hpp">
       <Filter>server\http</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\routing_algorithms\isochrone.hpp">
+      <Filter>engine\routing_algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\engine\plugins\isochrone_plugin.hpp">
+      <Filter>engine\plugins</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
