@@ -243,14 +243,14 @@ function show(obj){
     if (!(markers === undefined))
         map.removeLayer(markers);
     markers = L.featureGroup();
-    //marker.setLatLng(new L.LatLng(obj.points[0][0], obj.points[0][1]));
+   // marker.setLatLng(new L.LatLng(obj.start[0], obj.start[1]));
     var pts = [];
     var hull = [];
-    for(var i = 0; i < obj.points.length; i++){
-        var p = new L.latLng(obj.points[i]);
+    for(var i = 0; i < obj.isochrone.length; i++){
+        var p = new L.latLng(obj.isochrone[i]);
         p.name = ''+i;
         hull.push(p);
-        var c = L.circleMarker(obj.points[i], { color: '#F00', fill: true, fillColor: '#F00', fillOpacity: 1, radius: 5, title: p.name});
+        var c = L.circleMarker(obj.isochrone[i], { color: '#F00', fill: true, fillColor: '#F00', fillOpacity: 1, radius: 5, title: p.name });
         c.bindLabel(p.name);
         markers.addLayer(c);
         //c.setRadius(5);
