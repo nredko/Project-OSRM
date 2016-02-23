@@ -1,0 +1,270 @@
+<html><head><title>OSRM test map</title>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+          <script src="http://leaflet.github.io/Leaflet.label/leaflet.label.js"></script>
+          <link rel="stylesheet" href="http://leaflet.github.io/Leaflet.label/leaflet.label.css" />
+ <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+  <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<style type="text/css">
+        body, html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+        }
+
+        #map {
+            width: 99%;
+            height: 100%;
+        }
+  .slider_control { position: relative; left: 7px; margin: 10px; }
+</style>
+</head><body><div style="width:100%; height:100%" id="map"></div>
+<script type='text/javascript'>
+
+var SERVICE='http://localhost:5000/isochrone?';
+
+var strTime;
+var strLoc;
+var marker;
+var markers;
+L.Icon.Text = L.Icon.extend({
+    initialize: function (text, options) {
+        this._text = text;
+        L.Icon.prototype.initialize.apply(this, [options]);
+    },
+
+    createIcon: function () {
+        var el = document.createElement('div');
+        el.appendChild(document.createTextNode(this._text));
+        this._setIconStyles(el, 'icon');
+        el.style.textShadow = "2px 2px 2px #fff";
+        return el;
+    },
+
+    createShadow: function () { return null; }
+
+});
+
+L.Marker.Text = L.Marker.extend({
+    initialize: function (latlng, text, options) {
+        L.Marker.prototype.initialize.apply(this, [latlng, options]);
+        this._fakeicon = new L.Icon.Text(text);
+    },
+
+    _initIcon: function () {
+        L.Marker.prototype._initIcon.apply(this);
+
+        var i = this._icon, s = this._shadow, obj = this.options.icon
+        this._icon = this._shadow = null;
+
+        this.options.icon = this._fakeicon;
+        L.Marker.prototype._initIcon.apply(this);
+        this.options.icon = obj;
+
+        if (s) {
+            s.parentNode.removeChild(s);
+            this._icon.appendChild(s);
+        }
+
+        i.parentNode.removeChild(i);
+        this._icon.appendChild(i);
+
+        var w = this._icon.clientWidth, h = this._icon.clientHeight;
+        this._icon.style.marginLeft = -w / 2 + "px";
+        //this._icon.style.backgroundColor = "red";
+        var off = new L.Point(w / 2, 0);
+        if (L.Browser.webkit) off.y = -h;
+        L.DomUtil.setPosition(i, off);
+        if (s) L.DomUtil.setPosition(s, off);
+    }
+});
+
+L.Control.slider = L.Control.extend({
+    options: {
+        position: 'topleft'
+    },
+    onAdd: function (map) {
+        var slider_div = L.DomUtil.create('div', 'slider_control');
+        $(function() {
+            $( ".slider_control" ).slider({
+              orientation: "vertical",
+              range: "min",
+              min: 1,
+              max: 60,
+              value: strTime,
+              step: 1,
+              start: function ( event, ui) {
+                //When moving the slider, disable panning.
+                map.dragging.disable();
+                map.once('mousedown', function (e) { 
+                    map.dragging.enable();
+                });
+              },
+              slide: function ( event, ui ) {
+                //window.location.search =  ui.value;
+                strTime = ui.value;
+                
+                $(".tbTime").html('<b>'+strTime + '</b> min');
+                strTime = ui.value;
+                // marker.fire('dragend');
+              },
+              change: function ( event, ui ) {
+                // marker.fire('dragend');
+              }
+
+            });
+            
+        });
+        return slider_div;
+    }
+});
+
+if(window.location.hash.length > 0){
+   strLoc = window.location.hash.substring(1);
+} else {
+    strLoc = "54.99839,82.67967"
+}
+if(window.location.search.length > 0){
+   strTime = window.location.search.substring(1);
+} else {
+    strTime = "1"
+}
+
+strCoords=strLoc.split(',');
+start = L.latLng(parseFloat(strCoords[0]), parseFloat(strCoords[1]));
+
+JSONP = {
+    fences: {},
+    callbacks: {},
+    timeouts: {},
+    timers: {},
+    late: function() {},    
+    empty: function() {},
+    call: function(source, callback_function, timeout_function, timeout, id, parameters) {
+        if (JSONP.fences[id] == true)
+            return false;
+        JSONP.fences[id] = true;
+        JSONP.timeouts[id] = function(response) {
+            try {
+                timeout_function(response, parameters);
+            } finally {
+                JSONP.callbacks[id] = JSONP.late;             // clean functions
+                JSONP.timeouts[id] = JSONP.empty;
+                JSONP.fences[id] = undefined;                      // clean fence
+            }
+        };
+        JSONP.callbacks[id] = function(response) {
+            clearTimeout(JSONP.timers[id]);                        // clear timeout timer
+            JSONP.timers[id] = undefined;
+            try {
+                callback_function(response, parameters);                // actual wrapped callback 
+            } finally {
+                JSONP.callbacks[id] = JSONP.empty;            // clean functions
+                JSONP.timeouts[id] = JSONP.late;
+                JSONP.fences[id] = undefined;                      // clean fence
+            }
+        };
+        var jsonp = document.getElementById('jsonp_'+id);
+        if(jsonp)
+            jsonp.parentNode.removeChild(jsonp);
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.id = 'jsonp_'+id;
+        script.src = source.replace(/%jsonp/,"JSONP.callbacks."+id);
+        document.head.appendChild(script);
+        JSONP.timers[id] = setTimeout(JSONP.timeouts[id], timeout);
+        return true;
+    },
+    clear: function(id) {
+        clearTimeout(JSONP.timers[id]);                    // clear timeout timer
+        JSONP.callbacks[id] = JSONP.empty;            // clean functions
+        JSONP.timeouts[id] = JSONP.empty;
+        JSONP.fences[id] = undefined;                      // clean fence
+        var jsonp = document.getElementById('jsonp_'+id);
+        if(jsonp)
+            jsonp.parentNode.removeChild(jsonp);        
+    },
+    reset: function() {
+        JSONP.fences = {};
+        JSONP.callbacks = {};
+        JSONP.timeouts = {};
+        JSONP.timers = {};
+    }
+};
+
+
+var map = L.map('map').setView(start, 13);;
+map.addLayer(L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+}));
+
+marker = L.marker(start, { draggable: true }).addTo(map);
+map.on('click', function(e) { marker.setLatLng(e.latlng); marker.fire('dragend');})
+//Create control
+myControl = L.control({position: 'topleft'});
+myControl.onAdd = function(map) {
+            this._div = L.DomUtil.create('div', 'tbTime');
+            this._div.innerHTML = '<b>'+strTime + '</b> min';
+            return this._div;
+}
+myControl.addTo(map);
+
+var slider = new L.Control.slider();
+map.addControl(slider);
+
+function controlEnter(e) {
+    map.dragging.disable();
+    map.on('click', function(e) { });
+}
+function controlLeave() {
+    map.dragging.enable();
+    map.on('click', function(e) { marker.setLatLng(e.latlng); marker.fire('dragend');})
+}
+marker.on('dragend', function(event) {
+    $(".leaflet-container").css("cursor", "wait");
+    $(".leaflet-clickable").css("cursor", "wait");
+    var marker = event.target;  
+    var latLng = marker.getLatLng();
+    window.location.hash = '#'+latLng.lat.toFixed(5)+','+latLng.lng.toFixed(5)
+    var query = 'jsonp=show&loc='+latLng.lat.toFixed(5)+','+latLng.lng.toFixed(5) + '&t='+strTime*60;
+    marker.dragging.disable();
+    JSONP.call(SERVICE+query, 'JSONP', function(){}, 10000, query, {}); 
+ });
+marker.fire('dragend');
+var hullPolygon;
+
+
+function show(obj){
+    $(".leaflet-container").css("cursor", "default");
+    $(".leaflet-clickable").css("cursor", "default");
+    if(!(hullPolygon === undefined))
+        map.removeLayer(hullPolygon);
+    if (!(markers === undefined))
+        map.removeLayer(markers);
+    markers = L.featureGroup();
+    //marker.setLatLng(new L.LatLng(obj.points[0][0], obj.points[0][1]));
+    var pts = [];
+    var hull = [];
+    for(var i = 0; i < obj.points.length; i++){
+        var p = new L.latLng(obj.points[i]);
+        p.name = ''+i;
+        hull.push(p);
+        var c = L.circleMarker(obj.points[i], { color: '#F00', fill: true, fillColor: '#F00', fillOpacity: 1, radius: 5, title: p.name});
+        c.bindLabel(p.name);
+        markers.addLayer(c);
+        //c.setRadius(5);
+        //c.addTo(map);
+    }
+
+    hullPolygon = L.polygon(hull, { color: '#00F', fillColor: '#00F', fillOpacity: 0.5, weight: 1 });
+    map.fitBounds(hullPolygon.getBounds());
+    //hullPolygon.addTo(map);
+    markers.addTo(map);
+    marker.dragging.enable();
+}
+
+</script>
+</body>
+</html>
+

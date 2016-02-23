@@ -128,7 +128,8 @@ GenerateServerProgramOptions(const int argc,
                              int &max_locations_trip,
                              int &max_locations_viaroute,
                              int &max_locations_distance_table,
-                             int &max_locations_map_matching)
+                             int &max_locations_map_matching,
+							 int &max_time_isochrone)
 {
     using boost::program_options::value;
     using boost::filesystem::path;
@@ -170,6 +171,8 @@ GenerateServerProgramOptions(const int argc,
          "Max. locations supported in trip query") //
         ("max-table-size", value<int>(&max_locations_distance_table)->default_value(100),
          "Max. locations supported in distance table query") //
+		("max-time-isochrone", value<int>(&max_time_isochrone)->default_value(3600),
+			"Max. time for calculating isochrone area") //
         ("max-matching-size", value<int>(&max_locations_map_matching)->default_value(100),
          "Max. locations supported in map matching query");
 

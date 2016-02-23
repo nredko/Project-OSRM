@@ -46,6 +46,7 @@ struct EngineConfig
     int max_locations_viaroute = -1;
     int max_locations_distance_table = -1;
     int max_locations_map_matching = -1;
+	int max_time_isochrone = -1;
     bool use_shared_memory = true;
 };
 

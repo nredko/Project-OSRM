@@ -53,7 +53,7 @@ int main(int argc, const char *argv[]) try
         argc, argv, config.server_paths, ip_address, ip_port, requested_thread_num,
         config.use_shared_memory, trial_run, config.max_locations_trip,
         config.max_locations_viaroute, config.max_locations_distance_table,
-        config.max_locations_map_matching);
+        config.max_locations_map_matching, config.max_time_isochrone);
     if (init_result == util::INIT_OK_DO_NOT_START_ENGINE)
     {
         return EXIT_SUCCESS;

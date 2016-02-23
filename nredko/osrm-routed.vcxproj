@@ -29,6 +29,8 @@
     <ClCompile Include="..\src\util\simple_logger.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\engine\datafacade\internal_datafacade.hpp" />
+    <ClInclude Include="..\include\engine\datafacade\shared_datafacade.hpp" />
     <ClInclude Include="..\include\engine\plugins\distance_table.hpp" />
     <ClInclude Include="..\include\engine\plugins\hello_world.hpp" />
     <ClInclude Include="..\include\engine\plugins\isochrone.hpp" />
@@ -47,6 +49,9 @@
     <ClInclude Include="..\include\server\request_handler.hpp" />
     <ClInclude Include="..\include\server\request_parser.hpp" />
     <ClInclude Include="..\include\server\server.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="index.html" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D180E3D5-747C-44F8-B4F2-B102D4831B3E}</ProjectGuid>
@@ -79,13 +84,14 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;NOMINMAX;_WIN32_WINNT=0x0701;XML_STATIC;_LARGEFILE_SOURCE;_FILE_OFFSET_BITS=64;WIN32_LEAN_AND_MEAN;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)..\include;$(SolutionDir)..\third_party;$(SolutionDir)..\osrm-deps\libs\include;$(SolutionDir)..\osrm-deps\boost\include\boost-1_59;$(SolutionDir)..\osrm-deps\tbb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
       <DisableSpecificWarnings>4996;4068;4715;4351;4005;4244;4800;4267;4067;4307</DisableSpecificWarnings>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
