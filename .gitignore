@@ -3,7 +3,7 @@
 osrm-deps
 RU-NVS.*
 .vs
-.sdf
+*.sdf
 x64
 # Compiled source #
 ###################
