@@ -2,6 +2,9 @@
 #############################
 osrm-deps
 RU-NVS.*
+.vs
+.sdf
+x64
 # Compiled source #
 ###################
 *.com
