@@ -108,6 +108,12 @@ namespace osrm
 							std::string("Could not find a matching segment");
 						return Status::NoSegment;
 					}
+					if (facade->EdgeIsCompressed(phantom_node_pair.first.forward_node_id))
+					{
+						std::vector<NodeID> forward_id_vector;
+						facade->GetUncompressedGeometry(phantom_node_pair.first.forward_node_id, forward_id_vector);
+						source = forward_id_vector[phantom_node_pair.first.fwd_segment_position];
+					}
 
 					auto result_points = search_engine_ptr->isochrone(phantom_node_pair.first, max_time);
 

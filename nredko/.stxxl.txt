@@ -1,1 +1,1 @@
-disk=H:/tmp/stxxl.tmp,25G,wincall delete
+disk=C:/tmp/stxxl.tmp,25G,wincall delete

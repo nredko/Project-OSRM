@@ -22,22 +22,22 @@ ECHO LOCAL_DEV^: %LOCAL_DEV%
 IF NOT DEFINED LOCAL_DEV SET LOCAL_DEV=0
 IF DEFINED LOCAL_DEV IF %LOCAL_DEV% EQU 1 IF EXIST %DEPSPKG% ECHO skipping deps download && GOTO SKIPDL
 
-IF EXIST %DEPSPKG% DEL %DEPSPKG%
-IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+::IF EXIST %DEPSPKG% DEL %DEPSPKG%
+::IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
-ECHO downloading %DEPSPKG%
-powershell Invoke-WebRequest https://mapbox.s3.amazonaws.com/windows-builds/windows-build-deps/$env:DEPSPKG -OutFile $env:PROJECT_DIR\$env:DEPSPKG
-IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+::ECHO downloading %DEPSPKG%
+::powershell Invoke-WebRequest https://mapbox.s3.amazonaws.com/windows-builds/windows-build-deps/$env:DEPSPKG -OutFile $env:PROJECT_DIR\$env:DEPSPKG
+::IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 :SKIPDL
 
-IF EXIST osrm-deps ECHO deleting osrm-deps... && RD /S /Q osrm-deps
-IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+::IF EXIST osrm-deps ECHO deleting osrm-deps... && RD /S /Q osrm-deps
+::IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 IF EXIST build ECHO deletings build dir... && RD /S /Q build
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
-7z -y x %DEPSPKG% | %windir%\system32\FIND "ing archive"
-IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+::7z -y x %DEPSPKG% | %windir%\system32\FIND "ing archive"
+::IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 MKDIR build
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
