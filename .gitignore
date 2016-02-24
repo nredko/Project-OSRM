@@ -1,7 +1,7 @@
 # pre compiled dependencies #
 #############################
 osrm-deps
-
+RU-NVS.*
 # Compiled source #
 ###################
 *.com
