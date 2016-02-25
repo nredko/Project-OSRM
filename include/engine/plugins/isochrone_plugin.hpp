@@ -100,22 +100,23 @@ namespace osrm
 					PhantomNodePair phantom_node_pair;
 					const bool checksum_OK = (route_parameters.check_sum == facade->GetCheckSum());
 					phantom_node_pair = facade->NearestPhantomNodeWithAlternativeFromBigComponent(route_parameters.coordinates[0]);
+					PhantomNode source = phantom_node_pair.first;
 					
 					// we didn't found a fitting node, return error
-					if (!phantom_node_pair.first.IsValid(facade->GetNumberOfNodes()))
+					if (!source.IsValid(facade->GetNumberOfNodes()))
 					{
 						json_result.values["status_message"] =
 							std::string("Could not find a matching segment");
 						return Status::NoSegment;
 					}
-					if (facade->EdgeIsCompressed(phantom_node_pair.first.forward_node_id))
-					{
-						std::vector<NodeID> forward_id_vector;
-						facade->GetUncompressedGeometry(phantom_node_pair.first.forward_node_id, forward_id_vector);
-						source = forward_id_vector[phantom_node_pair.first.fwd_segment_position];
-					}
+					//if (facade->EdgeIsCompressed(source.forward_node_id))
+					//{
+					//	std::vector<NodeID> forward_id_vector;
+					//	facade->GetUncompressedGeometry(source.forward_node_id, forward_id_vector);
+					//	source = forward_id_vector[source.fwd_segment_position];
+					//}
 
-					auto result_points = search_engine_ptr->isochrone(phantom_node_pair.first, max_time);
+					auto result_points = search_engine_ptr->isochrone(source, max_time);
 
 					if (!result_points)
 					{
